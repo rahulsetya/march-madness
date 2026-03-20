@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>March Madness 2026 — Wagers</title>
+<style>
+/* ── PASTE YOUR RENDER URL HERE ───────────────────────── */
+/* Edit the PROXY_URL constant in the <script> below      */
+
+:root {
+  --bg:#070a12; --bg2:#0c0f18; --bg3:#090c14; --bg4:#060910;
+  --border:#141f30; --border2:#0d1220; --border3:#0f1820;
+  --text:#b8c4d8; --text2:#e0e8f8; --text3:#c8d4e8;
+  --muted:#253048; --muted2:#1e2e42;
+  --subtext:#6a7a90; --subtext2:#8a9ab0;
+  --odds:#5a9ae0; --final:#3a4a62;
+  --th-bg:#060910; --th:#253048;
+  --scroll:#1a2438; --toggle:#1a2e40;
+}
+body.light {
+  --bg:#f4f6fa; --bg2:#fff; --bg3:#f0f2f7; --bg4:#e8ecf4;
+  --border:#d0d8e8; --border2:#dce4f0; --border3:#ccd4e4;
+  --text:#1a2540; --text2:#0d1830; --text3:#1e2e50;
+  --muted:#8898b8; --muted2:#a0aec0;
+  --subtext:#4a5a78; --subtext2:#5a6a88;
+  --odds:#1a5fb0; --final:#8898b8;
+  --th-bg:#e4eaf6; --th:#5a6a88;
+  --scroll:#c0cce0; --toggle:#c0cce0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
+::-webkit-scrollbar{height:4px;width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--scroll);border-radius:2px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Header */
+#hdr{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border3);padding:14px 20px 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+#hdr-l,#hdr-r{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.title{font-size:1.1rem;font-weight:800;color:var(--text2);letter-spacing:-.02em}
+.badge{background:#cc0c39;color:#fff;font-family:monospace;font-size:.56rem;font-weight:800;padding:2px 7px;border-radius:3px}
+#live-badge{background:rgba(255,77,106,.1);color:#ff4d6a;border:1px solid rgba(255,77,106,.25);font-family:monospace;font-size:.56rem;font-weight:700;padding:2px 7px;border-radius:3px;animation:pulse 1.5s infinite;display:none}
+.btn-sm{display:flex;align-items:center;gap:7px;cursor:pointer;font-family:monospace;font-size:.62rem;font-weight:700;color:var(--subtext);background:none;border:1px solid var(--toggle);border-radius:20px;padding:5px 12px;transition:all .2s}
+.btn-sm:hover{border-color:var(--subtext);color:var(--text)}
+#refresh{display:flex;align-items:center;gap:8px;background:rgba(204,12,57,.14);border:1.5px solid rgba(204,12,57,.5);color:#e05060;font-family:monospace;font-size:.72rem;font-weight:800;padding:9px 20px;border-radius:6px;cursor:pointer;letter-spacing:.06em;transition:background .2s}
+#refresh:hover{background:rgba(204,12,57,.26)}
+#refresh:disabled{opacity:.5;cursor:not-allowed}
+#spin{display:inline-block}
+#spin.on{animation:spin .7s linear infinite}
+
+/* Content */
+#content{padding:16px 20px;max-width:1100px;margin:0 auto}
+
+/* Stats */
+#stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:11px 15px;flex:1;min-width:100px}
+.stat-lbl{font-family:monospace;font-size:.5rem;color:var(--muted);letter-spacing:.09em;margin-bottom:4px}
+.stat-val{font-size:1.2rem;font-weight:800;line-height:1}
+.stat-sub{font-family:monospace;font-size:.53rem;color:var(--muted2);margin-top:3px}
+
+/* Filters */
+#filters{display:flex;gap:4px;margin-bottom:10px}
+.fb{background:transparent;color:var(--subtext);border:1px solid var(--toggle);font-family:monospace;font-size:.62rem;font-weight:800;padding:5px 12px;border-radius:4px;cursor:pointer;letter-spacing:.05em}
+.fb.active{background:#cc0c39;color:#fff;border-color:#cc0c39}
+.hint{font-family:monospace;font-size:.59rem;color:var(--muted2);margin-bottom:8px}
+
+/* Table */
+#twrap{overflow-x:auto;border-radius:8px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;background:var(--bg2)}
+th{padding:8px 12px;font-size:.56rem;font-family:monospace;font-weight:700;color:var(--th);letter-spacing:.09em;text-transform:uppercase;border-bottom:2px solid var(--border);background:var(--th-bg);white-space:nowrap;text-align:center}
+th.l{text-align:left}
+td{padding:12px 14px;border-bottom:1px solid var(--border2);vertical-align:middle}
+.bet-lbl{font-weight:600;color:var(--text3);font-size:.9rem;margin-bottom:2px}
+.bet-type{font-family:monospace;font-size:.56rem;color:var(--muted);margin-bottom:6px}
+.gscore{font-family:monospace;font-size:.78rem;font-weight:700}
+.gclock{font-family:monospace;font-size:.62rem;color:#ff4d6a;animation:pulse 1.5s infinite;margin-left:6px}
+.gfinal{font-family:monospace;font-size:.62rem;color:var(--final);margin-left:6px}
+.gup{font-family:monospace;font-size:.6rem;color:var(--muted2)}
+.odds-val{font-family:monospace;font-weight:800;color:var(--odds);font-size:.92rem}
+.obar{height:3px;background:var(--border);border-radius:2px;margin-top:4px}
+.obar-fill{height:100%;background:linear-gradient(90deg,#2a4a70,#5a9ae0);border-radius:2px}
+.otier{font-family:monospace;font-size:.52rem;color:var(--muted2);margin-top:3px}
+.money{font-family:monospace;text-align:center}
+.rpill{font-family:monospace;font-size:.58rem;font-weight:700;padding:2px 6px;border-radius:3px;display:inline-block;margin-top:5px}
+.sbadge{font-family:monospace;font-size:.59rem;font-weight:700;padding:3px 9px;border-radius:4px;letter-spacing:.06em;white-space:nowrap}
+.net-td{font-family:monospace;font-weight:800;text-align:center}
+tr.totals{border-top:2px solid var(--border)}
+tr.totals td{font-family:monospace;background:var(--bg4)}
+
+/* Jackpot */
+#jackpot{margin-top:12px;padding:12px 16px;background:rgba(83,211,56,.04);border:1px solid rgba(83,211,56,.12);border-radius:8px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.jlbl{font-family:monospace;font-size:.56rem;color:#2a5a2a;letter-spacing:.08em;margin-bottom:2px}
+.jval{font-size:1.4rem;font-weight:800;color:#53d338}
+.jsub{font-family:monospace;font-size:.56rem;color:#1e4a1e}
+.jdiv{height:40px;width:1px;background:rgba(83,211,56,.2)}
+#toppicks{flex:1;min-width:200px}
+.tplbl{font-family:monospace;font-size:.56rem;color:#2a5a2a;letter-spacing:.08em;margin-bottom:6px}
+#tplist{display:flex;gap:6px;flex-wrap:wrap}
+.tppill{font-family:monospace;font-size:.62rem;color:#53d338;background:rgba(83,211,56,.07);border:1px solid rgba(83,211,56,.15);padding:3px 8px;border-radius:4px}
+#footer{margin-top:10px;padding:8px 14px;border:1px solid var(--border3);border-radius:6px;font-size:.58rem;color:var(--muted);line-height:1.7}
+
+/* Admin modal */
+#modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center}
+#modal-bg.open{display:flex}
+#modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;width:min(700px,95vw);max-height:90vh;overflow-y:auto}
+#modal h2{font-size:1rem;font-weight:800;color:var(--text2);margin-bottom:4px}
+#modal p{font-size:.65rem;color:var(--subtext);margin-bottom:16px;font-family:monospace}
+.bet-row{display:grid;grid-template-columns:1fr 1fr 80px 80px 90px 90px 80px;gap:8px;align-items:center;margin-bottom:8px;padding:8px;background:var(--bg3);border-radius:6px}
+.bet-row input,select.bet-sel{background:var(--bg4);border:1px solid var(--border);color:var(--text);font-family:monospace;font-size:.68rem;padding:5px 8px;border-radius:4px;width:100%}
+.bet-row input:focus{outline:none;border-color:var(--odds)}
+.row-lbl{font-family:monospace;font-size:.52rem;color:var(--muted);margin-bottom:2px}
+.del-btn{background:rgba(255,77,106,.1);border:1px solid rgba(255,77,106,.3);color:#ff4d6a;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:.7rem}
+.del-btn:hover{background:rgba(255,77,106,.25)}
+.add-btn{background:rgba(90,154,224,.1);border:1px solid rgba(90,154,224,.3);color:var(--odds);font-family:monospace;font-size:.65rem;font-weight:700;padding:8px 16px;border-radius:6px;cursor:pointer;margin-top:8px}
+.save-btn{background:#cc0c39;border:none;color:#fff;font-family:monospace;font-size:.72rem;font-weight:800;padding:10px 24px;border-radius:6px;cursor:pointer;margin-top:12px}
+.close-btn{background:transparent;border:1px solid var(--border);color:var(--subtext);font-family:monospace;font-size:.65rem;padding:10px 18px;border-radius:6px;cursor:pointer;margin-top:12px;margin-left:8px}
+#pw-screen{text-align:center;padding:20px 0}
+#pw-screen input{background:var(--bg4);border:1px solid var(--border);color:var(--text);font-family:monospace;font-size:.9rem;padding:10px 16px;border-radius:6px;width:200px;text-align:center;margin-bottom:12px;display:block;margin-inline:auto}
+#pw-screen input:focus{outline:none;border-color:var(--odds)}
+#pw-err{color:#ff4d6a;font-family:monospace;font-size:.62rem;margin-top:6px}
+.modal-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.col-hdr{display:grid;grid-template-columns:1fr 1fr 80px 80px 90px 90px 80px;gap:8px;margin-bottom:4px}
+.col-hdr span{font-family:monospace;font-size:.5rem;color:var(--muted);letter-spacing:.07em}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <div id="hdr-l">
+    <span class="title">March Madness 2026</span>
+    <span class="badge">UNDERDOG PARLAY</span>
+    <span id="live-badge">● <span id="live-count">0</span> LIVE</span>
+  </div>
+  <div id="hdr-r">
+    <button class="btn-sm" onclick="toggleTheme()"><span id="theme-icon">☀</span><span id="theme-lbl">LIGHT MODE</span></button>
+    <button class="btn-sm" onclick="openAdmin()">✎ EDIT BETS</button>
+    <button id="refresh" onclick="fetchScores(true)">
+      <span id="spin">↻</span>
+      <span id="rlbl">REFRESH SCORES</span>
+      <span id="last-fetch" style="font-size:.58rem;color:#7a3040"></span>
+    </button>
+  </div>
+</div>
+
+<div id="content">
+  <div id="stats">
+    <div class="stat"><div class="stat-lbl">RESULTS</div><div class="stat-val" id="s-bets" style="color:var(--text)">—</div><div class="stat-sub" id="s-bets-sub">—</div></div>
+    <div class="stat"><div class="stat-lbl">TOTAL RISKED</div><div class="stat-val" id="s-risk">—</div></div>
+    <div class="stat"><div class="stat-lbl">TOTAL WON</div><div class="stat-val" id="s-won" style="color:var(--muted)">—</div><div class="stat-sub">winnings so far</div></div>
+    <div class="stat"><div class="stat-lbl">NET P&amp;L</div><div class="stat-val" id="s-net" style="color:var(--text)">—</div><div class="stat-sub">settled only</div></div>
+    <div class="stat"><div class="stat-lbl">LIVE</div><div class="stat-val" id="s-live" style="color:var(--muted)">—</div></div>
+  </div>
+
+  <div id="filters">
+    <button class="fb active" onclick="setFilter('all')">ALL</button>
+    <button class="fb" onclick="setFilter('live')">LIVE</button>
+    <button class="fb" onclick="setFilter('pending')">PENDING</button>
+    <button class="fb" onclick="setFilter('won')">WON</button>
+    <button class="fb" onclick="setFilter('lost')">LOST</button>
+  </div>
+  <div class="hint">Scores via ESPN · Auto-refreshes every 30s</div>
+
+  <div id="twrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28px">#</th>
+          <th class="l">Bet</th>
+          <th>Odds</th><th>Risk</th><th>To Win</th><th>Payout</th><th>Status</th><th>Net</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div id="jackpot">
+    <div>
+      <div class="jlbl">IF EVERY BET HITS</div>
+      <div class="jval" id="j-total">—</div>
+      <div class="jsub" id="j-sub">—</div>
+    </div>
+    <div class="jdiv"></div>
+    <div id="toppicks">
+      <div class="tplbl">BIGGEST PAYDAYS</div>
+      <div id="tplist"></div>
+    </div>
+  </div>
+  <div id="footer">Scores via ESPN · All bets $15 risk · 1-800-GAMBLER · Must be 21+</div>
+</div>
+
+<!-- Admin Modal -->
+<div id="modal-bg" onclick="bgClick(event)">
+  <div id="modal">
+    <div id="pw-screen">
+      <h2 style="margin-bottom:12px">🔒 Admin Access</h2>
+      <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()">
+      <button class="save-btn" onclick="checkPw()">ENTER</button>
+      <div id="pw-err"></div>
+    </div>
+    <div id="edit-screen" style="display:none">
+      <h2>Edit Bets</h2>
+      <p>Changes are saved in your browser and persist across visits.</p>
+      <div class="col-hdr">
+        <span>MY TEAM</span><span>OPP TEAM</span><span>ODDS</span>
+        <span>RISK $</span><span>TO WIN $</span><span>PAYOUT $</span><span>RESULT</span>
+      </div>
+      <div id="bet-rows"></div>
+      <button class="add-btn" onclick="addBetRow()">+ ADD BET</button>
+      <div class="modal-btns">
+        <button class="save-btn" onclick="saveBets()">SAVE CHANGES</button>
+        <button class="close-btn" onclick="closeAdmin()">CANCEL</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG — change this to your Render proxy URL ──────────────────────────
+const PROXY_URL = "https://YOUR-APP-NAME.onrender.com/scores";
+// ──────────────────────────────────────────────────────────────────────────
+const ADMIN_PASSWORD = "madness2026"; // change this
+
+const DEFAULT_BETS = [
+  {id:1,  team1:"TCU",                team2:"Ohio State",     label:"TCU ML",              odds:105,  risk:15, toWin:15.75,  payout:30.75,  result:"pending"},
+  {id:2,  team1:"Idaho",              team2:"Houston",        label:"Idaho ML",             odds:2200, risk:15, toWin:330,    payout:345,    result:"pending"},
+  {id:3,  team1:"VCU",               team2:"North Carolina", label:"VCU ML",               odds:120,  risk:15, toWin:18,     payout:33,     result:"pending"},
+  {id:4,  team1:"High Point",        team2:"Wisconsin",      label:"High Point ML",        odds:400,  risk:15, toWin:60,     payout:75,     result:"pending"},
+  {id:5,  team1:"McNeese",           team2:"Vanderbilt",     label:"McNeese ML",           odds:500,  risk:15, toWin:75,     payout:90,     result:"pending"},
+  {id:6,  team1:"Howard",            team2:"Michigan",       label:"Howard ML",            odds:4000, risk:15, toWin:600,    payout:615,    result:"pending"},
+  {id:7,  team1:"Saint Louis",       team2:"Georgia",        label:"Saint Louis ML",       odds:124,  risk:15, toWin:18.60,  payout:33.60,  result:"pending"},
+  {id:8,  team1:"Kennesaw State",    team2:"Gonzaga",        label:"Kennesaw State ML",    odds:1600, risk:15, toWin:240,    payout:255,    result:"pending"},
+  {id:9,  team1:"Texas",             team2:"BYU",            label:"Texas ML",             odds:114,  risk:15, toWin:17.10,  payout:32.10,  result:"pending"},
+  {id:10, team1:"Texas A&M",         team2:"Saint Mary's",   label:"Texas A&M ML",         odds:136,  risk:15, toWin:20.40,  payout:35.40,  result:"pending"},
+  {id:11, team1:"Penn",              team2:"Illinois",       label:"UPenn ML",             odds:2200, risk:15, toWin:330,    payout:345,    result:"pending"},
+  {id:12, team1:"Hawaii",            team2:"Arkansas",       label:"Hawaii ML",            odds:850,  risk:15, toWin:127.50, payout:142.50, result:"pending"},
+  {id:13, team1:"Siena",             team2:"Duke",           label:"Siena ML",             odds:3500, risk:15, toWin:525,    payout:540,    result:"pending"},
+  {id:14, team1:"North Dakota State",team2:"Michigan State", label:"North Dakota State ML",odds:950,  risk:15, toWin:142.50, payout:157.50, result:"pending"},
+  {id:15, team1:"South Florida",     team2:"Louisville",     label:"South Florida ML",     odds:150,  risk:15, toWin:22.50,  payout:37.50,  result:"pending"},
+  {id:16, team1:"Troy",              team2:"Nebraska",       label:"Troy ML",              odds:650,  risk:15, toWin:97.50,  payout:112.50, result:"pending"},
+];
+
+let BETS = JSON.parse(localStorage.getItem("mm26_bets") || "null") || DEFAULT_BETS;
+let scoreMap = {};
+let currentFilter = "all";
+let isLight = false;
+let adminUnlocked = false;
+
+// ── Theme ───────────────────────────────────────────────────────────────────
+function toggleTheme() {
+  isLight = !isLight;
+  document.body.classList.toggle("light", isLight);
+  document.getElementById("theme-icon").textContent = isLight ? "◑" : "☀";
+  document.getElementById("theme-lbl").textContent  = isLight ? "DARK MODE" : "LIGHT MODE";
+  localStorage.setItem("mm26_theme", isLight ? "light" : "dark");
+}
+if (localStorage.getItem("mm26_theme") === "light") toggleTheme();
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+const norm = s => (s||"").toLowerCase().replace(/[^a-z0-9 ]/g,"").replace(/\s+/g," ").trim();
+const match = (a,b) => { const na=norm(a),nb=norm(b); return na===nb||na.includes(nb)||nb.includes(na); };
+const fmtOdds = o => o>0?`+${o}`:`${o}`;
+const fmtMoney = n => "$"+Math.abs(n).toFixed(2);
+function findGame(t1,t2) {
+  let g = scoreMap[norm(t1)] || (t2 && scoreMap[norm(t2)]);
+  if (!g) for (const k of Object.keys(scoreMap)) {
+    if (norm(t1).includes(k)||k.includes(norm(t1))||norm(t2).includes(k)||k.includes(norm(t2))) return scoreMap[k];
+  }
+  return g;
+}
+function oddsTier(o) {
+  if (o>2000) return "HUGE UNDERDOG";
+  if (o>800)  return "BIG UNDERDOG";
+  if (o>300)  return "UNDERDOG";
+  return "SLIGHT DOG";
+}
+
+// ── Fetch scores ─────────────────────────────────────────────────────────────
+async function fetchScores(manual=false) {
+  const btn=document.getElementById("refresh"), spin=document.getElementById("spin"), lbl=document.getElementById("rlbl");
+  btn.disabled=true; spin.classList.add("on"); lbl.textContent="FETCHING…";
+  try {
+    const today=new Date().toISOString().slice(0,10).replace(/-/g,"");
+    const res=await fetch(`${PROXY_URL}?date=${today}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const {events}=await res.json();
+    scoreMap={};
+    for (const g of events) {
+      scoreMap[norm(g.homeTeam)]=g;
+      scoreMap[norm(g.awayTeam)]=g;
+    }
+    resolveResults();
+    document.getElementById("last-fetch").textContent=new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+    lbl.textContent="REFRESH SCORES";
+  } catch(e) {
+    lbl.textContent="RETRY";
+    spin.style.color="#ff4d6a";
+    console.error("Score fetch failed:", e);
+  } finally {
+    btn.disabled=false; spin.classList.remove("on");
+  }
+  render();
+}
+
+function resolveResults() {
+  for (const bet of BETS) {
+    if (bet.result !== "pending") continue;
+    const g = findGame(bet.team1, bet.team2);
+    if (!g || g.status !== "final") continue;
+    const myIsHome = match(g.homeTeam, bet.team1);
+    const my = myIsHome ? g.homeScore : g.awayScore;
+    const op = myIsHome ? g.awayScore : g.homeScore;
+    bet.result = my>op?"won":my<op?"lost":"push";
+  }
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+const S = {
+  pending:{label:"PENDING",color:"#5a8abf",bg:"rgba(60,90,140,.12)",border:"rgba(60,100,160,.25)"},
+  won:    {label:"WON",    color:"#53d338",bg:"rgba(83,211,56,.12)", border:"rgba(83,211,56,.35)"},
+  lost:   {label:"LOST",   color:"#ff4d6a",bg:"rgba(255,77,106,.1)",border:"rgba(255,77,106,.3)"},
+  push:   {label:"PUSH",   color:"#f5c842",bg:"rgba(245,200,66,.1)",border:"rgba(245,200,66,.3)"},
+};
+
+function render() {
+  const won=BETS.filter(b=>b.result==="won"), lost=BETS.filter(b=>b.result==="lost"), pend=BETS.filter(b=>b.result==="pending");
+  const totalRisk=BETS.reduce((s,b)=>s+b.risk,0), totalWin=BETS.reduce((s,b)=>s+b.toWin,0), maxPay=BETS.reduce((s,b)=>s+b.payout,0);
+  const net=won.reduce((s,b)=>s+b.toWin,0)-lost.reduce((s,b)=>s+b.risk,0);
+  const liveKeys=Object.values(scoreMap).filter(g=>g.status==="live");
+  const liveUniq=new Set(liveKeys.map(g=>g.homeTeam+g.awayTeam)).size;
+
+  // Stats
+  const bEl=document.getElementById("s-bets");
+  bEl.textContent=`${won.length} of ${won.length+lost.length} cashed`;
+  bEl.style.color=won.length>0?"#53d338":"var(--text)";
+  document.getElementById("s-bets-sub").textContent=pend.length>0?`${pend.length} more pending`:"all settled";
+  document.getElementById("s-risk").textContent=fmtMoney(totalRisk);
+  const wonEl=document.getElementById("s-won");
+  const wonPay=won.reduce((s,b)=>s+b.payout,0);
+  wonEl.textContent=wonPay>0?fmtMoney(wonPay):"—";
+  wonEl.style.color=wonPay>0?"#53d338":"var(--muted)";
+  const netEl=document.getElementById("s-net");
+  netEl.textContent=net===0?"—":(net>0?"+$":"-$")+Math.abs(net).toFixed(2);
+  netEl.style.color=net>0?"#53d338":net<0?"#ff4d6a":"var(--text)";
+  const lEl=document.getElementById("s-live");
+  lEl.textContent=liveUniq>0?`${liveUniq} games`:"—";
+  lEl.style.color=liveUniq>0?"#ff4d6a":"var(--muted)";
+
+  const lb=document.getElementById("live-badge");
+  lb.style.display=liveUniq>0?"inline":"none";
+  if(liveUniq>0) document.getElementById("live-count").textContent=liveUniq;
+
+  // Table
+  const filtered = currentFilter==="all" ? BETS
+    : currentFilter==="live" ? BETS.filter(b=>{const g=findGame(b.team1,b.team2);return g&&g.status==="live";})
+    : BETS.filter(b=>b.result===currentFilter);
+
+  document.getElementById("tbody").innerHTML = filtered.map((bet,i) => {
+    const sc=S[bet.result]||S.pending;
+    const g=findGame(bet.team1,bet.team2);
+    const netVal=bet.result==="won"?bet.toWin:bet.result==="lost"?-bet.risk:null;
+    const pct=Math.min(100,(Math.abs(bet.odds)/4000)*100);
+    const rowBg=bet.result==="won"?"rgba(83,211,56,.06)":bet.result==="lost"?"rgba(255,77,106,.05)":i%2===0?"var(--bg2)":"var(--bg3)";
+    const rowBL=bet.result==="won"?"3px solid rgba(83,211,56,.5)":bet.result==="lost"?"3px solid rgba(255,77,106,.4)":"3px solid #e6a817";
+    let scoreHtml="", pillHtml="";
+    if (!g) {
+      scoreHtml=`<span class="gup">—</span>`;
+    } else if (g.status==="upcoming") {
+      scoreHtml=`<span class="gup">Starts ${g.startTime}</span>`;
+    } else {
+      const myH=match(g.homeTeam,bet.team1);
+      const my=myH?g.homeScore:g.awayScore, op=myH?g.awayScore:g.homeScore;
+      const mn=myH?g.homeTeam:g.awayTeam, on=myH?g.awayTeam:g.homeTeam;
+      const win=my>op;
+      const sc2=g.status==="final"?(win?"#53d338":my===op?"#f5c842":"#ff4d6a"):(win?"#53d338":"#ff4d6a");
+      scoreHtml=`<span class="gscore" style="color:${sc2}">${mn} ${my}–${op} ${on}</span>`;
+      if(g.status==="live")  scoreHtml+=`<span class="gclock">● ${g.clockStr}</span>`;
+      if(g.status==="final") scoreHtml+=`<span class="gfinal">FINAL</span>`;
+      const pc=win?"#53d338":my===op?"#f5c842":"#ff4d6a";
+      const pb=win?"rgba(83,211,56,.07)":my===op?"rgba(245,200,66,.07)":"rgba(255,77,106,.07)";
+      const pbr=win?"rgba(83,211,56,.2)":my===op?"rgba(245,200,66,.2)":"rgba(255,77,106,.2)";
+      const pt=g.status==="final"?(win?"✓ WON":my===op?"PUSH":"✗ LOST"):(win?"▲ WINNING":"▼ LOSING");
+      pillHtml=`<span class="rpill" style="color:${pc};background:${pb};border:1px solid ${pbr}">${pt}</span>`;
+    }
+    return `<tr style="background:${rowBg};border-left:${rowBL}">
+      <td style="font-family:monospace;font-size:.6rem;color:var(--muted);text-align:center">${i+1}</td>
+      <td style="min-width:180px">
+        <div class="bet-lbl">${bet.label}</div>
+        <div class="bet-type">MONEYLINE · STRAIGHT</div>
+        ${scoreHtml}
+        ${pillHtml?`<div>${pillHtml}</div>`:""}
+      </td>
+      <td style="text-align:center">
+        <div class="odds-val">${fmtOdds(bet.odds)}</div>
+        <div class="obar"><div class="obar-fill" style="width:${pct}%"></div></div>
+        <div class="otier">${oddsTier(bet.odds)}</div>
+      </td>
+      <td class="money" style="color:var(--subtext)">${fmtMoney(bet.risk)}</td>
+      <td class="money" style="color:#53d338;font-weight:700">${fmtMoney(bet.toWin)}</td>
+      <td class="money" style="color:var(--subtext2)">${fmtMoney(bet.payout)}</td>
+      <td style="text-align:center"><span class="sbadge" style="background:${sc.bg};border:1px solid ${sc.border};color:${sc.color}">${sc.label}</span></td>
+      <td class="net-td" style="color:${netVal===null?"var(--muted)":netVal>0?"#53d338":"#ff4d6a"}">${netVal===null?"—":(netVal>0?"+":"")+fmtMoney(netVal)}</td>
+    </tr>`;
+  }).join("") + `<tr class="totals">
+    <td></td>
+    <td style="font-size:.58rem;font-weight:700;color:var(--muted);letter-spacing:.07em">TOTAL · ${filtered.length} BETS</td>
+    <td></td>
+    <td class="money" style="font-weight:700;color:var(--subtext)">${fmtMoney(totalRisk)}</td>
+    <td class="money" style="font-weight:700;color:#53d338">${fmtMoney(totalWin)}</td>
+    <td class="money" style="font-weight:700;color:var(--subtext2)">${fmtMoney(maxPay)}</td>
+    <td style="font-family:monospace;font-size:.58rem;text-align:center">
+      ${won.length>0?`<span style="color:#53d338;font-weight:700">${won.length}W</span> `:""}${lost.length>0?`<span style="color:#ff4d6a;font-weight:700">${lost.length}L</span> `:""}${pend.length>0?`<span style="color:var(--muted)">${pend.length} pending</span>`:""}
+    </td>
+    <td class="net-td" style="color:${net===0?"var(--muted)":net>0?"#53d338":"#ff4d6a"}">${net===0?"—":(net>0?"+":"")+fmtMoney(net)}</td>
+  </tr>`;
+
+  // Jackpot
+  document.getElementById("j-total").textContent=fmtMoney(maxPay);
+  document.getElementById("j-sub").textContent=`total return · ${fmtMoney(totalWin)} profit on ${fmtMoney(totalRisk)} risked`;
+  const top3=[...BETS].sort((a,b)=>b.toWin-a.toWin).slice(0,3);
+  document.getElementById("tplist").innerHTML=top3.map(b=>`<span class="tppill">${b.label} → ${fmtMoney(b.payout)}</span>`).join("");
+}
+
+function setFilter(f) {
+  currentFilter=f;
+  document.querySelectorAll(".fb").forEach(b=>b.classList.toggle("active",b.textContent===f.toUpperCase()));
+  render();
+}
+
+// ── Admin ─────────────────────────────────────────────────────────────────────
+function openAdmin() {
+  document.getElementById("modal-bg").classList.add("open");
+  if (!adminUnlocked) {
+    document.getElementById("pw-screen").style.display="block";
+    document.getElementById("edit-screen").style.display="none";
+    document.getElementById("pw-input").value="";
+    document.getElementById("pw-err").textContent="";
+    setTimeout(()=>document.getElementById("pw-input").focus(),100);
+  } else {
+    showEditScreen();
+  }
+}
+function closeAdmin() { document.getElementById("modal-bg").classList.remove("open"); }
+function bgClick(e) { if(e.target===document.getElementById("modal-bg")) closeAdmin(); }
+
+function checkPw() {
+  const val=document.getElementById("pw-input").value;
+  if (val===ADMIN_PASSWORD) {
+    adminUnlocked=true;
+    document.getElementById("pw-err").textContent="";
+    showEditScreen();
+  } else {
+    document.getElementById("pw-err").textContent="Incorrect password.";
+  }
+}
+
+function showEditScreen() {
+  document.getElementById("pw-screen").style.display="none";
+  document.getElementById("edit-screen").style.display="block";
+  renderBetRows();
+}
+
+function renderBetRows() {
+  document.getElementById("bet-rows").innerHTML=BETS.map((b,i)=>`
+    <div class="bet-row" id="row-${i}">
+      <div><div class="row-lbl">MY TEAM</div><input value="${b.team1}" data-i="${i}" data-f="team1" oninput="updateField(this)"></div>
+      <div><div class="row-lbl">OPP TEAM</div><input value="${b.team2}" data-i="${i}" data-f="team2" oninput="updateField(this)"></div>
+      <div><div class="row-lbl">ODDS</div><input type="number" value="${b.odds}" data-i="${i}" data-f="odds" oninput="updateField(this)"></div>
+      <div><div class="row-lbl">RISK $</div><input type="number" value="${b.risk}" data-i="${i}" data-f="risk" oninput="updateField(this)"></div>
+      <div><div class="row-lbl">TO WIN $</div><input type="number" value="${b.toWin}" data-i="${i}" data-f="toWin" oninput="updateField(this)"></div>
+      <div><div class="row-lbl">PAYOUT $</div><input type="number" value="${b.payout}" data-i="${i}" data-f="payout" oninput="updateField(this)"></div>
+      <div><div class="row-lbl">RESULT</div>
+        <select class="bet-sel" data-i="${i}" data-f="result" onchange="updateField(this)">
+          ${["pending","won","lost","push"].map(r=>`<option value="${r}"${b.result===r?" selected":""}>${r.toUpperCase()}</option>`).join("")}
+        </select>
+      </div>
+      <button class="del-btn" onclick="deleteBet(${i})">✕</button>
+    </div>
+  `).join("");
+}
+
+function updateField(el) {
+  const i=parseInt(el.dataset.i), f=el.dataset.f;
+  const v=["odds","risk","toWin","payout"].includes(f)?parseFloat(el.value)||0:el.value;
+  BETS[i][f]=v;
+  if (f==="team1"||f==="team2") BETS[i].label=BETS[i].team1+" ML";
+}
+
+function deleteBet(i) {
+  BETS.splice(i,1);
+  renderBetRows();
+}
+
+function addBetRow() {
+  BETS.push({id:Date.now(),team1:"Team",team2:"Opp",label:"Team ML",odds:100,risk:15,toWin:15,payout:30,result:"pending"});
+  renderBetRows();
+  setTimeout(()=>document.getElementById("bet-rows").lastElementChild?.scrollIntoView({behavior:"smooth"}),50);
+}
+
+function saveBets() {
+  localStorage.setItem("mm26_bets", JSON.stringify(BETS));
+  closeAdmin();
+  render();
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+fetchScores();
+setInterval(()=>fetchScores(false), 30000);
+</script>
+</body>
+</html>
