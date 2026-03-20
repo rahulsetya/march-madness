@@ -264,9 +264,12 @@ function init() {
     try {
       const parsed = JSON.parse(saved);
       bets = parsed.length > 0 ? parsed : DEFAULT_BETS.map(b => ({...b}));
-      // Merge any new DEFAULT_BETS not yet in saved data
-      const existingIds = new Set(bets.map(b => b.id));
-      DEFAULT_BETS.forEach(d => { if (!existingIds.has(d.id)) bets.push({...d}); });
+      // Merge any new DEFAULT_BETS not yet in saved data (dedupe by pick+opponent)
+      const existingKeys = new Set(bets.map(b => b.pick.toLowerCase() + "|" + b.opponent.toLowerCase()));
+      DEFAULT_BETS.forEach(d => {
+        const key = d.pick.toLowerCase() + "|" + d.opponent.toLowerCase();
+        if (!existingKeys.has(key)) { bets.push({...d}); existingKeys.add(key); }
+      });
     } catch { bets = DEFAULT_BETS.map(b => ({...b})); }
   } else {
     bets = DEFAULT_BETS.map(b => ({...b}));
@@ -340,9 +343,19 @@ const TEAM_ALIASES = {
   "northern iowa": "northern iowa",
   "st. john's": "saint john's",
   "miami (ohio)": "miami oh",
+  "miami oh": "miami oh",
   "miami (fl)": "miami fl",
+  "miami fl": "miami fl",
   "prairie view a&m": "prairie view",
-  "furman": "furman",
+  "long island university": "liu",
+  "liu sharks": "liu",
+  "santa clara": "santa clara",
+  "villanova": "villanova",
+  "hofstra": "hofstra",
+  "akron": "akron",
+  "ucf": "ucf",
+  "clemson": "clemson",
+  "missouri": "missouri",
 };
 
 function normalize(s) {
