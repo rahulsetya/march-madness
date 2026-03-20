@@ -329,7 +329,11 @@ function autoResolve(games) {
       const newStatus = won ? "won" : "lost";
       if (bet.status !== newStatus) { bet.status = newStatus; changed = true; }
     } else if (game.status === "in") {
-      if (bet.status === "pending") { bet.status = "live"; changed = true; }
+      // Always trust live data — override any stale resolved status
+      if (bet.status !== "live") { bet.status = "live"; changed = true; }
+    } else if (game.status === "pre") {
+      // Game hasn't started — revert live back to pending (handles restarts/delays)
+      if (bet.status === "live") { bet.status = "pending"; changed = true; }
     }
   });
   if (changed) saveBets();
