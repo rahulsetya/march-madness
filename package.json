@@ -1,0 +1,12 @@
+{
+  "name": "march-madness-proxy",
+  "version": "1.0.0",
+  "description": "ESPN scoreboard proxy for March Madness 2026 bet tracker",
+  "main": "proxy.js",
+  "scripts": {
+    "start": "node proxy.js"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}
