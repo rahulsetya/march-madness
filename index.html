@@ -445,7 +445,7 @@ function renderStats() {
   const lost = bets.filter(b => b.status === "lost").length;
   const live = bets.filter(b => b.status === "live").length;
   const pending = bets.filter(b => b.status === "pending").length;
-  const totalRisked = bets.reduce((s, b) => s + b.risk, 0);
+  const totalRisked = bets.filter(b => b.status !== "pending").reduce((s, b) => s + b.risk, 0);
   const totalWon = bets.filter(b => b.status === "won").reduce((s, b) => s + b.toWin, 0);
   const netPL = totalWon - (lost * 15);
   const settledRisk = (won + lost) * 15;
