@@ -509,13 +509,13 @@ function renderAdminPanel(content) {
       <div class="form-group"><label>Opponent</label><input id="e_opp" value="${escHtml(bet.opponent)}" list="teams-list" autocomplete="off"></div>
       <div class="form-row">
         <div class="form-group"><label>Bet Type</label><input id="e_type" value="${escHtml(bet.betType)}"></div>
-        <div class="form-group"><label>Odds</label><input id="e_odds" value="${escHtml(bet.odds)}"></div>
+        <div class="form-group"><label>Odds</label><input id="e_odds" value="${escHtml(bet.odds)}" oninput="calcPayout('e')" placeholder="+200"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Risk ($)</label><input id="e_risk" type="number" step="0.01" value="${bet.risk}"></div>
-        <div class="form-group"><label>To Win ($)</label><input id="e_towin" type="number" step="0.01" value="${bet.toWin}"></div>
+        <div class="form-group"><label>Risk ($)</label><input id="e_risk" type="number" step="0.01" value="${bet.risk}" oninput="calcPayout('e')"></div>
+        <div class="form-group"><label>To Win ($)</label><input id="e_towin" type="number" step="0.01" value="${bet.toWin}" readonly style="opacity:0.6;cursor:not-allowed"></div>
       </div>
-      <div class="form-group"><label>Payout ($)</label><input id="e_payout" type="number" step="0.01" value="${bet.payout}"></div>
+      <div class="form-group"><label>Payout ($)</label><input id="e_payout" type="number" step="0.01" value="${bet.payout}" readonly style="opacity:0.6;cursor:not-allowed"></div>
       <div class="form-group"><label>Status</label>
         <select id="e_status">
           <option value="pending" ${bet.status==="pending"?"selected":""}>Pending</option>
@@ -538,14 +538,14 @@ function renderAdminPanel(content) {
       <div class="form-group"><label>Pick Team</label><input id="n_pick" placeholder="Team name" list="teams-list" autocomplete="off"></div>
       <div class="form-group"><label>Opponent</label><input id="n_opp" placeholder="Opponent" list="teams-list" autocomplete="off"></div>
       <div class="form-row">
-        <div class="form-group"><label>Odds</label><input id="n_odds" placeholder="+200"></div>
+        <div class="form-group"><label>Odds</label><input id="n_odds" placeholder="+200" oninput="calcPayout('n')"></div>
         <div class="form-group"><label>Bet Type</label><input id="n_type" value="ML"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Risk ($)</label><input id="n_risk" type="number" step="0.01" placeholder="15"></div>
-        <div class="form-group"><label>To Win ($)</label><input id="n_towin" type="number" step="0.01" placeholder="0"></div>
+        <div class="form-group"><label>Risk ($)</label><input id="n_risk" type="number" step="0.01" placeholder="15" oninput="calcPayout('n')"></div>
+        <div class="form-group"><label>To Win ($)</label><input id="n_towin" type="number" step="0.01" placeholder="—" readonly style="opacity:0.6;cursor:not-allowed"></div>
       </div>
-      <div class="form-group"><label>Payout ($)</label><input id="n_payout" type="number" step="0.01" placeholder="0"></div>
+      <div class="form-group"><label>Payout ($)</label><input id="n_payout" type="number" step="0.01" placeholder="—" readonly style="opacity:0.6;cursor:not-allowed"></div>
       <button class="btn-primary" onclick="addNewBet()">Add Bet</button>
     </div>
     <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em;">Bets — click to edit</div>
@@ -568,6 +568,20 @@ function renderAdminPanel(content) {
 function showAddBetForm() {
   const f = document.getElementById("addBetForm");
   f.style.display = f.style.display === "none" ? "block" : "none";
+}
+
+function calcPayout(prefix) {
+  const oddsStr = (document.getElementById(prefix + "_odds")?.value || "").trim();
+  const risk = parseFloat(document.getElementById(prefix + "_risk")?.value) || 0;
+  const oddsNum = parseFloat(oddsStr);
+  if (!oddsNum || !risk) return;
+  let toWin;
+  if (oddsNum > 0) toWin = risk * (oddsNum / 100);
+  else toWin = risk * (100 / Math.abs(oddsNum));
+  toWin = Math.round(toWin * 100) / 100;
+  const payout = Math.round((risk + toWin) * 100) / 100;
+  document.getElementById(prefix + "_towin").value = toWin.toFixed(2);
+  document.getElementById(prefix + "_payout").value = payout.toFixed(2);
 }
 
 function addNewBet() {
