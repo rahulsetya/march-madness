@@ -269,47 +269,49 @@ async function fetchScores() {
 function processScores(games) {
   liveScores = {};
   if (!Array.isArray(games)) return;
-  games.forEach(g => {
-    const teams = [g.homeTeam, g.awayTeam].map(t => t?.toLowerCase().trim()).filter(Boolean);
-    liveScores[g.id] = g;
-    teams.forEach(t => { liveScores[t] = g; });
-    // also index by partial name
-    teams.forEach(t => {
-      const parts = t.split(" ");
-      parts.forEach(p => { if (p.length > 3) liveScores[p] = g; });
-    });
-  });
+  // Store full game objects indexed by id only; matching done in findGame
+  games.forEach(g => { liveScores[g.id] = g; });
   autoResolve(games);
   render();
 }
 
+// Returns a match score (higher = better) for how well a query matches a team name.
+// Uses word-boundary logic so "texas" won't score against "texas a&m aggies".
+function matchScore(query, teamName) {
+  const q = query.toLowerCase().trim();
+  const t = teamName.toLowerCase().trim();
+  if (q === t) return 100;                          // exact
+  if (t === q) return 100;
+  // Remove common suffixes like "aggies", "longhorns", etc. for comparison
+  const tWords = t.split(/\s+/);
+  const qWords = q.split(/\s+/);
+  // All query words must appear as whole words in team name (not as substrings)
+  const allMatch = qWords.every(qw =>
+    tWords.some(tw => tw === qw)
+  );
+  if (allMatch && qWords.length === tWords.length) return 90; // same word count, all match
+  if (allMatch) return 70;                           // query words all found in team
+  // team name starts with query (e.g. query="texas" team="texas longhorns" — ok)
+  // but NOT if query is shorter and team has more specific prefix words
+  if (tWords.slice(0, qWords.length).join(" ") === q) return 60;
+  return 0;
+}
+
 function findGame(bet) {
-  const pickLower = bet.pick.toLowerCase();
-  const oppLower = bet.opponent.toLowerCase();
-  // Try direct match first
-  if (liveScores[pickLower]) return liveScores[pickLower];
-  if (liveScores[oppLower]) return liveScores[oppLower];
-  // Try word-by-word
-  for (const word of pickLower.split(" ")) {
-    if (word.length > 3 && liveScores[word]) return liveScores[word];
+  const games = Object.values(liveScores);
+  let bestGame = null;
+  let bestScore = 0;
+  for (const g of games) {
+    if (!g.homeTeam || !g.awayTeam) continue;
+    const s = Math.max(
+      matchScore(bet.pick, g.homeTeam),
+      matchScore(bet.pick, g.awayTeam),
+      matchScore(bet.opponent, g.homeTeam),
+      matchScore(bet.opponent, g.awayTeam)
+    );
+    if (s > bestScore) { bestScore = s; bestGame = g; }
   }
-  for (const word of oppLower.split(" ")) {
-    if (word.length > 3 && liveScores[word]) return liveScores[word];
-  }
-  // Search all games
-  for (const key of Object.keys(liveScores)) {
-    const g = liveScores[key];
-    if (g && g.homeTeam && g.awayTeam) {
-      const ht = g.homeTeam.toLowerCase();
-      const at = g.awayTeam.toLowerCase();
-      if (ht.includes(pickLower) || pickLower.includes(ht.split(" ").slice(-1)[0]) ||
-          at.includes(pickLower) || pickLower.includes(at.split(" ").slice(-1)[0]) ||
-          ht.includes(oppLower) || at.includes(oppLower)) {
-        return g;
-      }
-    }
-  }
-  return null;
+  return bestScore > 0 ? bestGame : null;
 }
 
 function autoResolve(games) {
@@ -318,12 +320,9 @@ function autoResolve(games) {
     const game = findGame(bet);
     if (!game) return;
     if (game.status === "final") {
-      const pickLower = bet.pick.toLowerCase();
       const homeScore = parseInt(game.homeScore) || 0;
       const awayScore = parseInt(game.awayScore) || 0;
-      const homeName = (game.homeTeam || "").toLowerCase();
-      const awayName = (game.awayTeam || "").toLowerCase();
-      const pickIsHome = homeName.includes(pickLower) || pickLower.includes(homeName.split(" ").slice(-1)[0]);
+      const pickIsHome = matchScore(bet.pick, game.homeTeam) >= matchScore(bet.pick, game.awayTeam);
       let won;
       if (pickIsHome) { won = homeScore > awayScore; }
       else { won = awayScore > homeScore; }
