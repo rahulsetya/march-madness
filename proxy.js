@@ -3,8 +3,14 @@ const https = require("https");
 
 const PORT = process.env.PORT || 3000;
 
-const ESPN_URL =
+const ESPN_BASE =
   "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?limit=100&groups=50";
+
+function dateStr(offsetDays = 0) {
+  const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
+  return d.toISOString().slice(0, 10).replace(/-/g, "");
+}
 
 function fetchJSON(url) {
   return new Promise((resolve, reject) => {
@@ -82,8 +88,12 @@ const server = http.createServer(async (req, res) => {
 
   if (url.pathname === "/scores") {
     try {
-      const raw = await fetchJSON(ESPN_URL);
-      const games = cleanGames(raw);
+      const [today, tomorrow] = await Promise.all([
+        fetchJSON(`${ESPN_BASE}&dates=${dateStr(0)}`),
+        fetchJSON(`${ESPN_BASE}&dates=${dateStr(1)}`),
+      ]);
+      const events = [...(today.events || []), ...(tomorrow.events || [])];
+      const games = cleanGames({ events });
       res.writeHead(200, CORS_HEADERS);
       res.end(JSON.stringify(games));
     } catch (err) {
