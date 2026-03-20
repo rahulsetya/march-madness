@@ -88,16 +88,15 @@ const server = http.createServer(async (req, res) => {
 
   if (url.pathname === "/scores") {
     try {
-      const [today, tomorrow] = await Promise.all([
+      const results = await Promise.allSettled([
         fetchJSON(`${ESPN_BASE}&dates=${dateStr(0)}`),
         fetchJSON(`${ESPN_BASE}&dates=${dateStr(1)}`),
       ]);
       const seen = new Set();
-      const events = [...(today.events || []), ...(tomorrow.events || [])].filter(e => {
-        if (seen.has(e.id)) return false;
-        seen.add(e.id);
-        return true;
-      });
+      const events = results
+        .filter(r => r.status === "fulfilled")
+        .flatMap(r => r.value.events || [])
+        .filter(e => { if (seen.has(e.id)) return false; seen.add(e.id); return true; });
       const games = cleanGames({ events });
       res.writeHead(200, CORS_HEADERS);
       res.end(JSON.stringify(games));

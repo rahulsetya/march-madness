@@ -264,11 +264,17 @@ function init() {
     try {
       const parsed = JSON.parse(saved);
       bets = parsed.length > 0 ? parsed : DEFAULT_BETS.map(b => ({...b}));
-      // Merge any new DEFAULT_BETS not yet in saved data (dedupe by pick+opponent)
-      const existingKeys = new Set(bets.map(b => b.pick.toLowerCase() + "|" + b.opponent.toLowerCase()));
+      // Deduplicate existing bets by pick+opponent (keep first occurrence)
+      const seenKeys = new Set();
+      bets = bets.filter(b => {
+        const key = b.pick.toLowerCase() + "|" + b.opponent.toLowerCase();
+        if (seenKeys.has(key)) return false;
+        seenKeys.add(key); return true;
+      });
+      // Merge any new DEFAULT_BETS not yet in saved data
       DEFAULT_BETS.forEach(d => {
         const key = d.pick.toLowerCase() + "|" + d.opponent.toLowerCase();
-        if (!existingKeys.has(key)) { bets.push({...d}); existingKeys.add(key); }
+        if (!seenKeys.has(key)) { bets.push({...d}); seenKeys.add(key); }
       });
     } catch { bets = DEFAULT_BETS.map(b => ({...b})); }
   } else {
