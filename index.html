@@ -546,9 +546,30 @@ function renderBetCard(bet) {
     const venueStr = venueLabel ? `<span style="color:var(--text-muted)">📍 ${escHtml(venueLabel)}</span>` : "";
     const tvStr = game.tv ? `<span style="color:var(--text-muted)">📺 ${escHtml(game.tv)}</span>` : "";
     const details = [venueStr, tvStr].filter(Boolean).join("&ensp;·&ensp;");
+
+    // Pre-game odds from DraftKings
+    let pregameOddsHTML = "";
+    if (game.odds) {
+      const pickML = pickIsHome ? game.odds.homeML : game.odds.awayML;
+      const oppML  = pickIsHome ? game.odds.awayML  : game.odds.homeML;
+      const fmtML  = v => !v ? "—" : (String(v).startsWith("-") || String(v).startsWith("+") ? v : "+" + v);
+      const parts = [];
+      if (pickML) parts.push(`<span style="color:var(--text-primary);font-weight:600">${escHtml(bet.pick)} ${fmtML(pickML)}</span>`);
+      if (oppML)  parts.push(`<span>${escHtml(bet.opponent)} ${fmtML(oppML)}</span>`);
+      if (game.odds.spread) parts.push(`<span>Spread: ${escHtml(game.odds.spread)}</span>`);
+      if (game.odds.overUnder) parts.push(`<span>O/U ${game.odds.overUnder}</span>`);
+      if (parts.length) {
+        pregameOddsHTML = `<div style="font-size:0.7rem;color:var(--text-muted);display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:2px">
+          ${parts.join('<span style="opacity:0.4">·</span>')}
+          <span style="opacity:0.4;font-size:0.65rem">via ${escHtml(game.odds.provider)}</span>
+        </div>`;
+      }
+    }
+
     scoreHTML = `<div style="padding:8px 14px;display:flex;flex-direction:column;gap:4px;font-size:0.75rem;text-align:center">
       <div class="game-clock" style="padding:0">Tip-off ${tipoff} EST</div>
       ${details ? `<div style="font-size:0.72rem">${details}</div>` : ""}
+      ${pregameOddsHTML}
     </div>`;
   }
   if (game && game.status !== "pre" && (status === "live" || status === "won" || status === "lost")) {

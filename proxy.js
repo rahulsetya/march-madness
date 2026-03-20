@@ -64,16 +64,24 @@ function cleanGames(raw) {
       venue: comp.venue?.fullName || "",
       venueCity: [comp.venue?.address?.city, comp.venue?.address?.state].filter(Boolean).join(", "),
       tv: (comp.broadcasts || []).flatMap(b => b.names || []).join(", "),
-      // Live odds — prefer DraftKings, fall back to first provider
+      // Odds — prefer DraftKings, fall back to first provider
       odds: (() => {
         const allOdds = comp.odds || [];
-        const dk = allOdds.find(o => (o.provider?.name || "").toLowerCase().includes("draftkings")) || allOdds[0];
+        const dk = allOdds.find(o => (o.provider?.name || "").toLowerCase().includes("draft")) || allOdds[0];
         if (!dk) return null;
+        const homeML = dk.homeTeamOdds?.moneyLine
+          ?? dk.moneyline?.home?.close?.american
+          ?? dk.moneyline?.home?.close
+          ?? null;
+        const awayML = dk.awayTeamOdds?.moneyLine
+          ?? dk.moneyline?.away?.close?.american
+          ?? dk.moneyline?.away?.close
+          ?? null;
         return {
           provider: dk.provider?.name || "ESPN BET",
-          homeML: dk.homeTeamOdds?.moneyLine ?? dk.moneyline?.home?.close?.american ?? null,
-          awayML: dk.awayTeamOdds?.moneyLine ?? dk.moneyline?.away?.close?.american ?? null,
-          spread: dk.spread ?? null,
+          homeML: homeML != null ? String(homeML) : null,
+          awayML: awayML != null ? String(awayML) : null,
+          spread: dk.details || (dk.spread != null ? String(dk.spread) : null),
           overUnder: dk.overUnder ?? null,
         };
       })(),
