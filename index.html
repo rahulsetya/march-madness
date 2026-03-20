@@ -531,10 +531,12 @@ function renderBetCard(bet) {
   const game = findGame(bet);
   const status = bet.status;
 
-  // Resolve logos from live score data
+  // Resolve logos and seeds from live score data
   const pickIsHome = game && matchScore(bet.pick, game.homeTeam) >= matchScore(bet.pick, game.awayTeam);
   const pickLogo = game ? (pickIsHome ? game.homeLogo : game.awayLogo) : "";
   const oppLogo  = game ? (pickIsHome ? game.awayLogo : game.homeLogo) : "";
+  const pickSeed = game ? (pickIsHome ? game.homeSeed : game.awaySeed) : null;
+  const oppSeed  = game ? (pickIsHome ? game.awaySeed : game.homeSeed) : null;
 
   let scoreHTML = "";
   let clockHTML = "";
@@ -580,8 +582,8 @@ function renderBetCard(bet) {
     <div class="bet-card ${status}" id="card-${bet.id}">
       <div class="card-header">
         <div class="team-info">
-          <div class="pick-team">${logoImg}<span>${escHtml(bet.pick)}</span></div>
-          <div class="vs-line">vs ${oppLogo ? `<img class="team-logo-sm" src="${escHtml(oppLogo)}" alt="">` : ""}${escHtml(bet.opponent)}</div>
+          <div class="pick-team">${logoImg}<span>${escHtml(bet.pick)}</span>${pickSeed ? `<span style="font-size:0.7rem;color:var(--text-muted);font-weight:500;margin-left:3px">#${pickSeed}</span>` : ""}</div>
+          <div class="vs-line">vs ${oppLogo ? `<img class="team-logo-sm" src="${escHtml(oppLogo)}" alt="">` : ""}${escHtml(bet.opponent)}${oppSeed ? `<span style="font-size:0.7rem;color:var(--text-muted);font-weight:500;margin-left:3px">#${oppSeed}</span>` : ""}</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
           <span class="bet-type-badge">${escHtml(bet.betType)}</span>
