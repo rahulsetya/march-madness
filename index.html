@@ -537,10 +537,11 @@ function renderBetCard(bet) {
   let clockHTML = "";
   if (game && status === "pending" && game.startTime) {
     const tipoff = new Date(game.startTime).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" });
-    const venueStr = game.venue ? `<span style="color:var(--text-muted)">📍 ${escHtml(game.venue)}</span>` : "";
+    const venueLabel = [game.venue, game.venueCity].filter(Boolean).join(" · ");
+    const venueStr = venueLabel ? `<span style="color:var(--text-muted)">📍 ${escHtml(venueLabel)}</span>` : "";
     const tvStr = game.tv ? `<span style="color:var(--text-muted)">📺 ${escHtml(game.tv)}</span>` : "";
     const details = [venueStr, tvStr].filter(Boolean).join("&ensp;·&ensp;");
-    scoreHTML = `<div style="padding:8px 14px;display:flex;flex-direction:column;gap:4px;font-size:0.75rem">
+    scoreHTML = `<div style="padding:8px 14px;display:flex;flex-direction:column;gap:4px;font-size:0.75rem;text-align:center">
       <div class="game-clock" style="padding:0">Tip-off ${tipoff} EST</div>
       ${details ? `<div style="font-size:0.72rem">${details}</div>` : ""}
     </div>`;

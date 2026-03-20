@@ -60,6 +60,7 @@ function cleanGames(raw) {
       period: comp.status?.period ? `Period ${comp.status.period}` : "",
       startTime: event.date,
       venue: comp.venue?.fullName || "",
+      venueCity: [comp.venue?.address?.city, comp.venue?.address?.state].filter(Boolean).join(", "),
       tv: (comp.broadcasts || []).flatMap(b => b.names || []).join(", "),
     };
   });
