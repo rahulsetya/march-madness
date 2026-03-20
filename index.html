@@ -498,8 +498,8 @@ function renderBetCard(bet) {
     <div class="bet-card ${status}" id="card-${bet.id}">
       <div class="card-header">
         <div class="team-info">
-          <div class="pick-team">${logoImg}<span>${escHtml(bet.pick.split(" ")[0])}</span></div>
-          <div class="vs-line">vs ${oppLogo ? `<img class="team-logo-sm" src="${escHtml(oppLogo)}" alt="">` : ""}${escHtml(bet.opponent.split(" ")[0])}</div>
+          <div class="pick-team">${logoImg}<span>${escHtml(bet.pick)}</span></div>
+          <div class="vs-line">vs ${oppLogo ? `<img class="team-logo-sm" src="${escHtml(oppLogo)}" alt="">` : ""}${escHtml(bet.opponent)}</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
           <span class="bet-type-badge">${escHtml(bet.betType)}</span>
