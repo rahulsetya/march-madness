@@ -92,7 +92,12 @@ const server = http.createServer(async (req, res) => {
         fetchJSON(`${ESPN_BASE}&dates=${dateStr(0)}`),
         fetchJSON(`${ESPN_BASE}&dates=${dateStr(1)}`),
       ]);
-      const events = [...(today.events || []), ...(tomorrow.events || [])];
+      const seen = new Set();
+      const events = [...(today.events || []), ...(tomorrow.events || [])].filter(e => {
+        if (seen.has(e.id)) return false;
+        seen.add(e.id);
+        return true;
+      });
       const games = cleanGames({ events });
       res.writeHead(200, CORS_HEADERS);
       res.end(JSON.stringify(games));
