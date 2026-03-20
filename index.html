@@ -605,7 +605,7 @@ function renderAdminPanel(content) {
     <h2>⚙️ Admin Panel</h2>
     <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
       <button class="btn-primary" style="flex:1;margin:0" onclick="showAddBetForm()">+ Add Single Bet</button>
-      <button class="btn-primary" style="flex:1;margin:0;background:rgba(108,99,255,0.3);border:1px solid var(--accent)" onclick="toggleBuilderSection()">📋 Day 2 Templates (Mar 20)</button>
+      ${!localStorage.getItem('mm2026_day2done') ? `<button class="btn-primary" style="flex:1;margin:0;background:rgba(108,99,255,0.3);border:1px solid var(--accent)" onclick="toggleBuilderSection()">📋 Day 2 Templates (Mar 20)</button>` : ""}
     </div>
     <div id="builderSection" style="display:none;margin-bottom:16px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden">
       <div style="padding:12px 14px;border-bottom:1px solid var(--border);font-size:0.78rem;color:var(--text-muted)">Select your pick and enter odds for each game — Risk is $15 each</div>
@@ -811,6 +811,7 @@ function confirmBuilderBets() {
     added++;
   });
   if (added === 0) { alert("Select a team and enter odds for at least one game."); return; }
+  localStorage.setItem('mm2026_day2done', '1');
   saveBets(); render();
   document.getElementById("builderSection").style.display = "none";
   renderAdminContent();
