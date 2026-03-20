@@ -69,13 +69,11 @@ function cleanGames(raw) {
         const allOdds = comp.odds || [];
         const dk = allOdds.find(o => (o.provider?.name || "").toLowerCase().includes("draft")) || allOdds[0];
         if (!dk) return null;
-        const homeML = dk.homeTeamOdds?.moneyLine
-          ?? dk.moneyline?.home?.close?.american
-          ?? dk.moneyline?.home?.close
+        const homeML = dk.moneyline?.home?.close?.odds
+          ?? dk.homeTeamOdds?.moneyLine
           ?? null;
-        const awayML = dk.awayTeamOdds?.moneyLine
-          ?? dk.moneyline?.away?.close?.american
-          ?? dk.moneyline?.away?.close
+        const awayML = dk.moneyline?.away?.close?.odds
+          ?? dk.awayTeamOdds?.moneyLine
           ?? null;
         return {
           provider: dk.provider?.name || "ESPN BET",
