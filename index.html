@@ -480,14 +480,33 @@ function checkAdminPw() {
   else { document.getElementById("pwError").textContent = "Incorrect password"; }
 }
 
+const TOURNAMENT_TEAMS = [
+  "Arkansas","Auburn","BYU","Baylor","Cincinnati","Clemson","Colorado State",
+  "Connecticut","Creighton","Duke","Florida","Florida Atlantic","Georgia",
+  "Gonzaga","Grand Canyon","High Point","Houston","Howard","Idaho","Illinois",
+  "Indiana","Iowa State","Kansas","Kansas State","Kennesaw State","Kentucky",
+  "Liberty","Louisville","Loyola Chicago","Marquette","Maryland","McNeese",
+  "Memphis","Michigan","Michigan State","Mississippi State","Missouri",
+  "Nebraska","Nevada","New Mexico","North Carolina","North Dakota State",
+  "Northwestern","Ohio State","Oklahoma","Oregon","Penn State","Purdue",
+  "Saint Louis","Saint Mary's","San Diego State","Siena","South Florida","TCU",
+  "Tennessee","Texas","Texas A&M","Texas Tech","Troy","Tulane","UConn","UPenn",
+  "USC","Utah State","VCU","Vanderbilt","Virginia","Wake Forest","Wisconsin"
+].sort();
+
+function teamDatalist() {
+  return `<datalist id="teams-list">${TOURNAMENT_TEAMS.map(t => `<option value="${t}">`).join("")}</datalist>`;
+}
+
 function renderAdminPanel(content) {
   if (editingBetId !== null) {
     const bet = bets.find(b => b.id === editingBetId);
     if (!bet) { editingBetId = null; renderAdminPanel(content); return; }
     content.innerHTML = `
+      ${teamDatalist()}
       <h2><button onclick="editingBetId=null;renderAdminContent()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:1rem;margin-right:6px">← Back</button>Edit Bet</h2>
-      <div class="form-group"><label>Pick Team</label><input id="e_pick" value="${escHtml(bet.pick)}"></div>
-      <div class="form-group"><label>Opponent</label><input id="e_opp" value="${escHtml(bet.opponent)}"></div>
+      <div class="form-group"><label>Pick Team</label><input id="e_pick" value="${escHtml(bet.pick)}" list="teams-list" autocomplete="off"></div>
+      <div class="form-group"><label>Opponent</label><input id="e_opp" value="${escHtml(bet.opponent)}" list="teams-list" autocomplete="off"></div>
       <div class="form-row">
         <div class="form-group"><label>Bet Type</label><input id="e_type" value="${escHtml(bet.betType)}"></div>
         <div class="form-group"><label>Odds</label><input id="e_odds" value="${escHtml(bet.odds)}"></div>
@@ -511,12 +530,13 @@ function renderAdminPanel(content) {
     return;
   }
   content.innerHTML = `
+    ${teamDatalist()}
     <h2>⚙️ Admin Panel</h2>
     <button class="btn-primary" onclick="showAddBetForm()" style="margin-bottom:16px">+ Add New Bet</button>
     <div id="addBetForm" style="display:none; margin-bottom:20px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:14px;">
       <h3 style="margin-bottom:12px; font-size:0.95rem;">New Bet</h3>
-      <div class="form-group"><label>Pick Team</label><input id="n_pick" placeholder="Team name"></div>
-      <div class="form-group"><label>Opponent</label><input id="n_opp" placeholder="Opponent"></div>
+      <div class="form-group"><label>Pick Team</label><input id="n_pick" placeholder="Team name" list="teams-list" autocomplete="off"></div>
+      <div class="form-group"><label>Opponent</label><input id="n_opp" placeholder="Opponent" list="teams-list" autocomplete="off"></div>
       <div class="form-row">
         <div class="form-group"><label>Odds</label><input id="n_odds" placeholder="+200"></div>
         <div class="form-group"><label>Bet Type</label><input id="n_type" value="ML"></div>
