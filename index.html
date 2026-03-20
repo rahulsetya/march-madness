@@ -361,16 +361,17 @@ function renderStats() {
     <div class="stat-card"><div class="stat-label">Total Won</div><div class="stat-value green">$${totalWon.toFixed(2)}</div></div>
     <div class="stat-card"><div class="stat-label">Net P&L</div><div class="stat-value ${netPL >= 0 ? 'green' : 'red'}">${netPL >= 0 ? '+' : ''}$${netPL.toFixed(2)}</div></div>
     <div class="stat-card"><div class="stat-label">Live Now</div><div class="stat-value live">${live}</div></div>
+    <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value yellow">${pending}</div></div>
   `;
 }
 
 function renderTabs() {
-  const counts = { ALL: bets.length, LIVE: 0, WON: 0, LOST: 0 };
+  const counts = { ALL: bets.length, LIVE: 0, PENDING: 0, WON: 0, LOST: 0 };
   bets.forEach(b => {
     const s = b.status.toUpperCase();
     if (counts[s] !== undefined) counts[s]++;
   });
-  const tabs = ["ALL","LIVE","WON","LOST"];
+  const tabs = ["ALL","LIVE","PENDING","WON","LOST"];
   document.getElementById("filterBar").innerHTML = tabs.map(t =>
     `<button class="tab ${activeFilter===t?'active':''}" onclick="setFilter('${t}')">${t}<span class="badge">${counts[t]}</span></button>`
   ).join("");
