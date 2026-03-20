@@ -77,9 +77,9 @@ function cleanGames(raw) {
           overUnder: dk.overUnder ?? null,
         };
       })(),
-      // Win probability from live situation
+      // Win probability — nested inside situation.lastPlay.probability
       winProb: (() => {
-        const prob = comp.situation?.probability;
+        const prob = comp.situation?.lastPlay?.probability ?? comp.situation?.probability;
         if (!prob) return null;
         const h = prob.homeWinPercentage;
         if (h == null) return null;
