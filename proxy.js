@@ -64,6 +64,27 @@ function cleanGames(raw) {
       venue: comp.venue?.fullName || "",
       venueCity: [comp.venue?.address?.city, comp.venue?.address?.state].filter(Boolean).join(", "),
       tv: (comp.broadcasts || []).flatMap(b => b.names || []).join(", "),
+      // Live odds — prefer DraftKings, fall back to first provider
+      odds: (() => {
+        const allOdds = comp.odds || [];
+        const dk = allOdds.find(o => (o.provider?.name || "").toLowerCase().includes("draftkings")) || allOdds[0];
+        if (!dk) return null;
+        return {
+          provider: dk.provider?.name || "ESPN BET",
+          homeML: dk.homeTeamOdds?.moneyLine ?? dk.moneyline?.home?.close?.american ?? null,
+          awayML: dk.awayTeamOdds?.moneyLine ?? dk.moneyline?.away?.close?.american ?? null,
+          spread: dk.spread ?? null,
+          overUnder: dk.overUnder ?? null,
+        };
+      })(),
+      // Win probability from live situation
+      winProb: (() => {
+        const sit = comp.situation;
+        if (!sit) return null;
+        const homeWinPct = sit.homeWinPercentage ?? sit.probability?.home ?? null;
+        if (homeWinPct === null) return null;
+        return { home: Math.round(homeWinPct * 100), away: Math.round((1 - homeWinPct) * 100) };
+      })(),
     };
   });
 }
