@@ -39,8 +39,32 @@
   .live-indicator { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--live); font-weight: 600; }
   .live-dot { width: 8px; height: 8px; background: var(--live); border-radius: 50%; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(1.3); } }
-  .theme-btn, .admin-btn, .refresh-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s; }
+  .theme-btn, .admin-btn, .refresh-btn, .builder-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s; }
   .theme-btn:hover, .admin-btn:hover, .refresh-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .builder-btn { background: rgba(108,99,255,0.15); border-color: rgba(108,99,255,0.4); color: #a89cf7; font-weight: 600; }
+  .builder-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* BET BUILDER */
+  .builder-modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 90%; max-width: 680px; max-height: 88vh; overflow-y: auto; display: flex; flex-direction: column; }
+  .builder-header { padding: 20px 24px 0; position: sticky; top: 0; background: var(--surface); z-index: 1; border-bottom: 1px solid var(--border); padding-bottom: 14px; }
+  .builder-header h2 { font-size: 1.1rem; font-weight: 700; }
+  .builder-header p { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+  .builder-games { padding: 12px 20px; display: flex; flex-direction: column; gap: 8px; }
+  .builder-row { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; display: grid; grid-template-columns: 60px 1fr 110px; gap: 10px; align-items: center; transition: border-color 0.2s; }
+  .builder-row.selected { border-color: var(--accent); }
+  .builder-time { font-size: 0.68rem; color: var(--text-muted); font-weight: 600; line-height: 1.3; }
+  .builder-teams { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .builder-team-btn { flex: 1; min-width: 80px; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.15s; text-align: center; }
+  .builder-team-btn:hover { border-color: var(--accent); color: var(--text); }
+  .builder-team-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+  .builder-vs { font-size: 0.65rem; color: var(--text-muted); flex-shrink: 0; }
+  .builder-odds-col { display: flex; flex-direction: column; gap: 4px; }
+  .builder-odds-input { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; color: var(--text); font-size: 0.82rem; width: 100%; text-align: center; }
+  .builder-odds-input:focus { outline: none; border-color: var(--accent); }
+  .builder-towin { font-size: 0.65rem; color: var(--green); text-align: center; font-weight: 600; min-height: 14px; }
+  .builder-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; position: sticky; bottom: 0; background: var(--surface); }
+  .builder-count { font-size: 0.8rem; color: var(--text-muted); }
+  .builder-count span { color: var(--accent); font-weight: 700; }
   .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .refresh-btn:disabled:hover { background: var(--surface2); color: var(--text); border-color: var(--border); }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -180,6 +204,7 @@
   </div>
 </div>
 
+
 <script>
 const PROXY_URL = "https://march-madness-rjzg.onrender.com/scores";
 const ADMIN_PASSWORD = "madness2026";
@@ -284,6 +309,20 @@ function processScores(games) {
 const TEAM_ALIASES = {
   "upenn": "pennsylvania",
   "penn": "pennsylvania",
+  "cal baptist": "california baptist",
+  "queens (n.c.)": "queens",
+  "queens university": "queens",
+  "college of charleston": "charleston",
+  "long island": "long island university",
+  "liu": "long island university",
+  "wright state": "wright state",
+  "tennessee state": "tennessee state",
+  "northern iowa": "northern iowa",
+  "st. john's": "saint john's",
+  "miami (ohio)": "miami oh",
+  "miami (fl)": "miami fl",
+  "prairie view a&m": "prairie view",
+  "furman": "furman",
 };
 
 function normalize(s) {
@@ -509,7 +548,11 @@ const TOURNAMENT_TEAMS = [
   "Northwestern","Ohio State","Oklahoma","Oregon","Penn State","Purdue",
   "Saint Louis","Saint Mary's","San Diego State","Siena","South Florida","TCU",
   "Tennessee","Texas","Texas A&M","Texas Tech","Troy","Tulane","UConn","UPenn",
-  "USC","Utah State","VCU","Vanderbilt","Virginia","Wake Forest","Wisconsin"
+  "USC","Utah State","VCU","Vanderbilt","Virginia","Wake Forest","Wisconsin",
+  "Santa Clara","Cal Baptist","Grand Canyon","Yale","Drake","Iowa","Clemson",
+  "Marquette","Vermont","Purdue","Queens University","Long Beach State","Baylor",
+  "Colgate","Alabama","College of Charleston","Gonzaga","Samford","Akron",
+  "Arizona","Wright State","Tennessee State","Hofstra","Long Island University"
 ].sort();
 
 function teamDatalist() {
@@ -550,7 +593,18 @@ function renderAdminPanel(content) {
   content.innerHTML = `
     ${teamDatalist()}
     <h2>⚙️ Admin Panel</h2>
-    <button class="btn-primary" onclick="showAddBetForm()" style="margin-bottom:16px">+ Add New Bet</button>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <button class="btn-primary" style="flex:1;margin:0" onclick="showAddBetForm()">+ Add Single Bet</button>
+      <button class="btn-primary" style="flex:1;margin:0;background:rgba(108,99,255,0.3);border:1px solid var(--accent)" onclick="toggleBuilderSection()">📋 Day 2 Templates (Mar 20)</button>
+    </div>
+    <div id="builderSection" style="display:none;margin-bottom:16px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+      <div style="padding:12px 14px;border-bottom:1px solid var(--border);font-size:0.78rem;color:var(--text-muted)">Select your pick and enter odds for each game — Risk is $15 each</div>
+      <div id="builderGames" style="padding:10px 14px;display:flex;flex-direction:column;gap:6px"></div>
+      <div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:0.78rem;color:var(--text-muted)">Ready: <strong id="builderReadyCount" style="color:var(--accent)">0</strong> bets</span>
+        <button class="btn-primary" style="width:auto;margin:0;padding:8px 20px" onclick="confirmBuilderBets()">✓ Confirm &amp; Add Bets</button>
+      </div>
+    </div>
     <div id="addBetForm" style="display:none; margin-bottom:20px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:14px;">
       <h3 style="margin-bottom:12px; font-size:0.95rem;">New Bet</h3>
       <div class="form-group"><label>Pick Team</label><input id="n_pick" placeholder="Team name" list="teams-list" autocomplete="off"></div>
@@ -643,6 +697,113 @@ function resetAllBets() {
   if (!confirm("Reset all bets to defaults? This cannot be undone.")) return;
   bets = DEFAULT_BETS.map(b => ({...b}));
   saveBets(); render(); renderAdminContent();
+}
+
+// ─── Bet Builder ──────────────────────────────────────────────────────────────
+const DAY2_GAMES = [
+  { time:"12:15 PM", team1:"Santa Clara",      team2:"Kentucky" },
+  { time:"12:40 PM", team1:"Akron",            team2:"Texas Tech" },
+  { time:"1:35 PM",  team1:"Long Island",      team2:"Arizona" },
+  { time:"1:50 PM",  team1:"Wright State",     team2:"Virginia" },
+  { time:"2:50 PM",  team1:"Tennessee State",  team2:"Iowa State" },
+  { time:"3:15 PM",  team1:"Hofstra",          team2:"Alabama" },
+  { time:"4:10 PM",  team1:"Utah State",       team2:"Villanova" },
+  { time:"4:25 PM",  team1:"Miami (Ohio)",     team2:"Tennessee" },
+  { time:"6:50 PM",  team1:"Iowa",             team2:"Clemson" },
+  { time:"7:10 PM",  team1:"Northern Iowa",    team2:"St. John's" },
+  { time:"7:25 PM",  team1:"UCF",              team2:"UCLA" },
+  { time:"7:35 PM",  team1:"Queens (N.C.)",    team2:"Purdue" },
+  { time:"9:25 PM",  team1:"Prairie View A&M", team2:"Florida" },
+  { time:"9:45 PM",  team1:"Cal Baptist",      team2:"Kansas" },
+  { time:"10:00 PM", team1:"Furman",           team2:"UConn" },
+  { time:"10:10 PM", team1:"Missouri",         team2:"Miami (FL)" },
+];
+
+// state: { pick: "team1"|"team2"|null, odds: "" }
+let builderState = DAY2_GAMES.map(() => ({ pick: null, odds: "" }));
+
+function toggleBuilderSection() {
+  const sec = document.getElementById("builderSection");
+  const isHidden = sec.style.display === "none";
+  sec.style.display = isHidden ? "block" : "none";
+  if (isHidden) {
+    builderState = DAY2_GAMES.map(() => ({ pick: null, odds: "" }));
+    renderBuilderGames();
+  }
+}
+
+function renderBuilderGames() {
+  document.getElementById("builderGames").innerHTML = DAY2_GAMES.map((g, i) => {
+    const s = builderState[i];
+    const toWinStr = calcBuilderToWin(i);
+    return `
+      <div class="builder-row ${s.pick ? 'selected' : ''}" id="brow-${i}">
+        <div class="builder-time">${g.time}<br>EST</div>
+        <div class="builder-teams">
+          <button class="builder-team-btn ${s.pick==='team1'?'active':''}" onclick="selectBuilderPick(${i},'team1')">${escHtml(g.team1)}</button>
+          <span class="builder-vs">vs</span>
+          <button class="builder-team-btn ${s.pick==='team2'?'active':''}" onclick="selectBuilderPick(${i},'team2')">${escHtml(g.team2)}</button>
+        </div>
+        <div class="builder-odds-col">
+          <input class="builder-odds-input" id="bodds-${i}" placeholder="e.g. +400"
+            value="${escHtml(s.odds)}" oninput="onBuilderOdds(${i},this.value)">
+          <div class="builder-towin" id="btowin-${i}">${toWinStr}</div>
+        </div>
+      </div>`;
+  }).join("");
+  updateBuilderCount();
+}
+
+function selectBuilderPick(i, which) {
+  builderState[i].pick = builderState[i].pick === which ? null : which;
+  const row = document.getElementById(`brow-${i}`);
+  row.querySelectorAll(".builder-team-btn").forEach((b,j) => {
+    b.classList.toggle("active", builderState[i].pick === (j===0?"team1":"team2"));
+  });
+  row.classList.toggle("selected", !!builderState[i].pick);
+  updateBuilderCount();
+}
+
+function onBuilderOdds(i, val) {
+  builderState[i].odds = val;
+  document.getElementById(`btowin-${i}`).textContent = calcBuilderToWin(i);
+  updateBuilderCount();
+}
+
+function calcBuilderToWin(i) {
+  const s = builderState[i];
+  const odds = parseFloat(s.odds);
+  if (!odds || !s.pick) return "";
+  const toWin = odds > 0 ? 15 * (odds/100) : 15 * (100/Math.abs(odds));
+  return `+$${toWin.toFixed(2)}`;
+}
+
+function updateBuilderCount() {
+  const ready = builderState.filter((s,i) => s.pick && s.odds.trim()).length;
+  document.getElementById("builderReadyCount").textContent = ready;
+}
+
+function confirmBuilderBets() {
+  let added = 0;
+  DAY2_GAMES.forEach((g, i) => {
+    const s = builderState[i];
+    if (!s.pick || !s.odds.trim()) return;
+    const odds = parseFloat(s.odds);
+    if (!odds) return;
+    const pick = s.pick === "team1" ? g.team1 : g.team2;
+    const opponent = s.pick === "team1" ? g.team2 : g.team1;
+    const toWin = odds > 0 ? 15*(odds/100) : 15*(100/Math.abs(odds));
+    const toWinR = Math.round(toWin*100)/100;
+    const payout = Math.round((15+toWinR)*100)/100;
+    const oddsStr = odds > 0 ? `+${odds}` : `${odds}`;
+    const newId = Math.max(...bets.map(b => b.id), 0) + 1 + added;
+    bets.push({ id: newId, pick, opponent, betType:"ML", odds: oddsStr, risk:15, toWin:toWinR, payout, status:"pending" });
+    added++;
+  });
+  if (added === 0) { alert("Select a team and enter odds for at least one game."); return; }
+  saveBets(); render();
+  document.getElementById("builderSection").style.display = "none";
+  renderAdminContent();
 }
 
 // ─── Close modal on overlay click ─────────────────────────────────────────────
