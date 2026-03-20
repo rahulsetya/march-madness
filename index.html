@@ -379,11 +379,12 @@ function renderTabs() {
 
 function setFilter(f) { activeFilter = f; render(); }
 
+const STATUS_ORDER = { live: 0, pending: 1, won: 2, lost: 3 };
+
 function renderBets() {
-  const filtered = bets.filter(b => {
-    if (activeFilter === "ALL") return true;
-    return b.status.toUpperCase() === activeFilter;
-  });
+  const filtered = bets
+    .filter(b => activeFilter === "ALL" || b.status.toUpperCase() === activeFilter)
+    .sort((a, b) => (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9));
   const grid = document.getElementById("betsGrid");
   if (filtered.length === 0) {
     grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon">🏀</div><p>No bets in this category</p></div>`;
