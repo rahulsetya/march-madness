@@ -52,14 +52,6 @@
   .stat-value.yellow { color: var(--yellow); }
   .stat-value.live { color: var(--live); }
 
-  /* JACKPOT */
-  .jackpot { margin: 16px 24px; background: linear-gradient(135deg, #1a0533, #0d1f4a); border: 1px solid #4c35a0; border-radius: 16px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-  .light .jackpot { background: linear-gradient(135deg, #ede7f6, #e3f2fd); border-color: #9c7bea; }
-  .jackpot-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
-  .jackpot-amount { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #ffd740, #ff9800); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .jackpot-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
-  .jackpot-bets { display: flex; flex-wrap: wrap; gap: 6px; }
-  .jackpot-bet-pill { font-size: 0.7rem; padding: 3px 8px; border-radius: 20px; background: rgba(108,99,255,0.2); border: 1px solid rgba(108,99,255,0.4); color: #a89cf7; }
 
   /* FILTER TABS */
   .filter-bar { padding: 12px 24px; display: flex; gap: 8px; flex-wrap: wrap; }
@@ -149,7 +141,6 @@
     .header { padding: 12px 16px; }
     .header h1 { font-size: 1.1rem; }
     .stats-bar, .filter-bar, .bets-container { padding-left: 14px; padding-right: 14px; }
-    .jackpot { margin: 12px 14px; }
     .bets-grid { grid-template-columns: 1fr; }
   }
 </style>
@@ -168,8 +159,6 @@
 </div>
 
 <div class="stats-bar" id="statsBar"></div>
-<div class="jackpot" id="jackpotSection"></div>
-
 <div class="filter-bar" id="filterBar"></div>
 
 <div class="bets-container">
@@ -342,7 +331,6 @@ function autoResolve(games) {
 // ─── Render ───────────────────────────────────────────────────────────────────
 function render() {
   renderStats();
-  renderJackpot();
   renderTabs();
   renderBets();
 }
@@ -363,22 +351,6 @@ function renderStats() {
     <div class="stat-card"><div class="stat-label">Net P&L</div><div class="stat-value ${netPL >= 0 ? 'green' : 'red'}">${netPL >= 0 ? '+' : ''}$${netPL.toFixed(2)}</div></div>
     <div class="stat-card"><div class="stat-label">Live Now</div><div class="stat-value live">${live}</div></div>
     <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value yellow">${pending}</div></div>
-  `;
-}
-
-function renderJackpot() {
-  const totalPayout = bets.reduce((s, b) => s + b.payout, 0);
-  const totalRisk = bets.reduce((s, b) => s + b.risk, 0);
-  const maxProfit = totalPayout - totalRisk;
-  document.getElementById("jackpotSection").innerHTML = `
-    <div>
-      <div class="jackpot-label">🏆 Max Jackpot (All ${bets.length} Bets Hit)</div>
-      <div class="jackpot-amount">$${totalPayout.toFixed(2)}</div>
-      <div class="jackpot-sub">Net profit if all win: +$${maxProfit.toFixed(2)} • Risk: $${totalRisk.toFixed(2)}</div>
-    </div>
-    <div class="jackpot-bets">
-      ${bets.map(b => `<span class="jackpot-bet-pill">${b.pick} ${b.odds}</span>`).join("")}
-    </div>
   `;
 }
 
@@ -414,6 +386,10 @@ function renderBetCard(bet) {
   const status = bet.status;
   let scoreHTML = "";
   let clockHTML = "";
+  if (game && status === "pending" && game.startTime) {
+    const tipoff = new Date(game.startTime).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" });
+    scoreHTML = `<div class="game-clock" style="padding:8px 14px">Tip-off ${tipoff} EST</div>`;
+  }
   if (game && (status === "live" || status === "won" || status === "lost")) {
     const home = game.homeTeam || ""; const away = game.awayTeam || "";
     const hs = game.homeScore ?? ""; const as = game.awayScore ?? "";
