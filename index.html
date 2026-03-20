@@ -115,7 +115,7 @@
 
   .score-section { padding: 6px 14px 10px; display: flex; align-items: center; gap: 8px; }
   .score-box { display: flex; align-items: center; gap: 6px; background: var(--surface2); border-radius: 8px; padding: 5px 10px; font-size: 0.85rem; flex: 1; }
-  .score-team { font-size: 0.72rem; color: var(--text-muted); }
+  .score-team { font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
   .score-val { font-size: 1.1rem; font-weight: 800; }
   .score-divider { color: var(--text-muted); font-weight: 300; }
   .game-clock { font-size: 0.68rem; color: var(--text-muted); text-align: center; padding: 0 14px 6px; }
@@ -466,12 +466,12 @@ function renderBetCard(bet) {
       <div class="score-section">
         <div class="score-box">
           <div>
-            <div class="score-team">${escHtml(away)}</div>
+            <div class="score-team" title="${escHtml(away)}">${escHtml(away)}</div>
             <div class="score-val">${as}</div>
           </div>
           <div class="score-divider">-</div>
           <div>
-            <div class="score-team">${escHtml(home)}</div>
+            <div class="score-team" title="${escHtml(home)}">${escHtml(home)}</div>
             <div class="score-val">${hs}</div>
           </div>
         </div>
