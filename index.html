@@ -229,7 +229,22 @@ const DEFAULT_BETS = [
   { id:13, pick:"Siena", opponent:"Duke", betType:"ML", odds:"+3500", risk:15, toWin:525, payout:540, status:"pending" },
   { id:14, pick:"North Dakota State", opponent:"Michigan State", betType:"ML", odds:"+950", risk:15, toWin:142.50, payout:157.50, status:"pending" },
   { id:15, pick:"South Florida", opponent:"Louisville", betType:"ML", odds:"+150", risk:15, toWin:22.50, payout:37.50, status:"pending" },
-  { id:16, pick:"Troy", opponent:"Nebraska", betType:"ML", odds:"+650", risk:15, toWin:97.50, payout:112.50, status:"pending" }
+  { id:16, pick:"Troy", opponent:"Nebraska", betType:"ML", odds:"+650", risk:15, toWin:97.50, payout:112.50, status:"pending" },
+  { id:17, pick:"Santa Clara", opponent:"Kentucky", betType:"ML", odds:"+130", risk:15, toWin:19.50, payout:34.50, status:"pending" },
+  { id:18, pick:"Akron", opponent:"Texas Tech", betType:"ML", odds:"+260", risk:15, toWin:39.00, payout:54.00, status:"pending" },
+  { id:19, pick:"Long Island", opponent:"Arizona", betType:"ML", odds:"+5000", risk:15, toWin:750.00, payout:765.00, status:"pending" },
+  { id:20, pick:"Wright State", opponent:"Virginia", betType:"ML", odds:"+1300", risk:15, toWin:195.00, payout:210.00, status:"pending" },
+  { id:21, pick:"Tennessee State", opponent:"Iowa State", betType:"ML", odds:"+2200", risk:15, toWin:330.00, payout:345.00, status:"pending" },
+  { id:22, pick:"Hofstra", opponent:"Alabama", betType:"ML", odds:"+550", risk:15, toWin:82.50, payout:97.50, status:"pending" },
+  { id:23, pick:"Villanova", opponent:"Utah State", betType:"ML", odds:"+105", risk:15, toWin:15.75, payout:30.75, status:"pending" },
+  { id:24, pick:"Miami (Ohio)", opponent:"Tennessee", betType:"ML", odds:"+410", risk:15, toWin:61.50, payout:76.50, status:"pending" },
+  { id:25, pick:"Clemson", opponent:"Iowa", betType:"ML", odds:"+110", risk:15, toWin:16.50, payout:31.50, status:"pending" },
+  { id:26, pick:"Northern Iowa", opponent:"St. John's", betType:"ML", odds:"+400", risk:15, toWin:60.00, payout:75.00, status:"pending" },
+  { id:27, pick:"UCF", opponent:"UCLA", betType:"ML", odds:"+200", risk:15, toWin:30.00, payout:45.00, status:"pending" },
+  { id:28, pick:"Queens (N.C.)", opponent:"Purdue", betType:"ML", odds:"+2200", risk:15, toWin:330.00, payout:345.00, status:"pending" },
+  { id:29, pick:"Cal Baptist", opponent:"Kansas", betType:"ML", odds:"+800", risk:15, toWin:120.00, payout:135.00, status:"pending" },
+  { id:30, pick:"Furman", opponent:"UConn", betType:"ML", odds:"+1700", risk:15, toWin:255.00, payout:270.00, status:"pending" },
+  { id:31, pick:"Missouri", opponent:"Miami (FL)", betType:"ML", odds:"+110", risk:15, toWin:16.50, payout:31.50, status:"pending" }
 ];
 
 let bets = [];
@@ -249,6 +264,9 @@ function init() {
     try {
       const parsed = JSON.parse(saved);
       bets = parsed.length > 0 ? parsed : DEFAULT_BETS.map(b => ({...b}));
+      // Merge any new DEFAULT_BETS not yet in saved data
+      const existingIds = new Set(bets.map(b => b.id));
+      DEFAULT_BETS.forEach(d => { if (!existingIds.has(d.id)) bets.push({...d}); });
     } catch { bets = DEFAULT_BETS.map(b => ({...b})); }
   } else {
     bets = DEFAULT_BETS.map(b => ({...b}));
