@@ -107,12 +107,7 @@
   .fin-value.odds { color: var(--yellow); }
   .fin-value.payout { color: var(--green); }
 
-  .card-footer { padding: 8px 14px 10px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-  .override-btns { display: flex; gap: 6px; }
-  .override-btn { font-size: 0.7rem; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
-  .override-btn.win:hover { background: rgba(0,230,118,0.2); color: var(--green); border-color: var(--green); }
-  .override-btn.lose:hover { background: rgba(255,23,68,0.2); color: var(--red); border-color: var(--red); }
-  .override-btn.reset:hover { background: rgba(255,215,64,0.2); color: var(--yellow); border-color: var(--yellow); }
+  .card-footer { padding: 8px 14px 10px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; }
   .result-profit { font-size: 0.85rem; font-weight: 700; }
   .result-profit.positive { color: var(--green); }
   .result-profit.negative { color: var(--red); }
@@ -198,22 +193,22 @@ const STORAGE_KEY = "mm2026_bets";
 const THEME_KEY = "mm2026_theme";
 
 const DEFAULT_BETS = [
-  { id:1, pick:"TCU", opponent:"Ohio State", betType:"ML", odds:"+105", risk:15, toWin:15.75, payout:30.75, status:"pending", override:null },
-  { id:2, pick:"Idaho", opponent:"Houston", betType:"ML", odds:"+2200", risk:15, toWin:330, payout:345, status:"pending", override:null },
-  { id:3, pick:"VCU", opponent:"North Carolina", betType:"ML", odds:"+120", risk:15, toWin:18, payout:33, status:"pending", override:null },
-  { id:4, pick:"High Point", opponent:"Wisconsin", betType:"ML", odds:"+400", risk:15, toWin:60, payout:75, status:"pending", override:null },
-  { id:5, pick:"McNeese", opponent:"Vanderbilt", betType:"ML", odds:"+500", risk:15, toWin:75, payout:90, status:"pending", override:null },
-  { id:6, pick:"Howard", opponent:"Michigan", betType:"ML", odds:"+4000", risk:15, toWin:600, payout:615, status:"pending", override:null },
-  { id:7, pick:"Saint Louis", opponent:"Georgia", betType:"ML", odds:"+124", risk:15, toWin:18.60, payout:33.60, status:"pending", override:null },
-  { id:8, pick:"Kennesaw State", opponent:"Gonzaga", betType:"ML", odds:"+1600", risk:15, toWin:240, payout:255, status:"pending", override:null },
-  { id:9, pick:"Texas", opponent:"BYU", betType:"ML", odds:"+114", risk:15, toWin:17.10, payout:32.10, status:"pending", override:null },
-  { id:10, pick:"Texas A&M", opponent:"Saint Mary's", betType:"ML", odds:"+136", risk:15, toWin:20.40, payout:35.40, status:"pending", override:null },
-  { id:11, pick:"UPenn", opponent:"Illinois", betType:"ML", odds:"+2200", risk:15, toWin:330, payout:345, status:"pending", override:null },
-  { id:12, pick:"Hawaii", opponent:"Arkansas", betType:"ML", odds:"+850", risk:15, toWin:127.50, payout:142.50, status:"pending", override:null },
-  { id:13, pick:"Siena", opponent:"Duke", betType:"ML", odds:"+3500", risk:15, toWin:525, payout:540, status:"pending", override:null },
-  { id:14, pick:"North Dakota State", opponent:"Michigan State", betType:"ML", odds:"+950", risk:15, toWin:142.50, payout:157.50, status:"pending", override:null },
-  { id:15, pick:"South Florida", opponent:"Louisville", betType:"ML", odds:"+150", risk:15, toWin:22.50, payout:37.50, status:"pending", override:null },
-  { id:16, pick:"Troy", opponent:"Nebraska", betType:"ML", odds:"+650", risk:15, toWin:97.50, payout:112.50, status:"pending", override:null }
+  { id:1, pick:"TCU", opponent:"Ohio State", betType:"ML", odds:"+105", risk:15, toWin:15.75, payout:30.75, status:"pending" },
+  { id:2, pick:"Idaho", opponent:"Houston", betType:"ML", odds:"+2200", risk:15, toWin:330, payout:345, status:"pending" },
+  { id:3, pick:"VCU", opponent:"North Carolina", betType:"ML", odds:"+120", risk:15, toWin:18, payout:33, status:"pending" },
+  { id:4, pick:"High Point", opponent:"Wisconsin", betType:"ML", odds:"+400", risk:15, toWin:60, payout:75, status:"pending" },
+  { id:5, pick:"McNeese", opponent:"Vanderbilt", betType:"ML", odds:"+500", risk:15, toWin:75, payout:90, status:"pending" },
+  { id:6, pick:"Howard", opponent:"Michigan", betType:"ML", odds:"+4000", risk:15, toWin:600, payout:615, status:"pending" },
+  { id:7, pick:"Saint Louis", opponent:"Georgia", betType:"ML", odds:"+124", risk:15, toWin:18.60, payout:33.60, status:"pending" },
+  { id:8, pick:"Kennesaw State", opponent:"Gonzaga", betType:"ML", odds:"+1600", risk:15, toWin:240, payout:255, status:"pending" },
+  { id:9, pick:"Texas", opponent:"BYU", betType:"ML", odds:"+114", risk:15, toWin:17.10, payout:32.10, status:"pending" },
+  { id:10, pick:"Texas A&M", opponent:"Saint Mary's", betType:"ML", odds:"+136", risk:15, toWin:20.40, payout:35.40, status:"pending" },
+  { id:11, pick:"UPenn", opponent:"Illinois", betType:"ML", odds:"+2200", risk:15, toWin:330, payout:345, status:"pending" },
+  { id:12, pick:"Hawaii", opponent:"Arkansas", betType:"ML", odds:"+850", risk:15, toWin:127.50, payout:142.50, status:"pending" },
+  { id:13, pick:"Siena", opponent:"Duke", betType:"ML", odds:"+3500", risk:15, toWin:525, payout:540, status:"pending" },
+  { id:14, pick:"North Dakota State", opponent:"Michigan State", betType:"ML", odds:"+950", risk:15, toWin:142.50, payout:157.50, status:"pending" },
+  { id:15, pick:"South Florida", opponent:"Louisville", betType:"ML", odds:"+150", risk:15, toWin:22.50, payout:37.50, status:"pending" },
+  { id:16, pick:"Troy", opponent:"Nebraska", betType:"ML", odds:"+650", risk:15, toWin:97.50, payout:112.50, status:"pending" }
 ];
 
 let bets = [];
@@ -320,7 +315,6 @@ function findGame(bet) {
 function autoResolve(games) {
   let changed = false;
   bets.forEach(bet => {
-    if (bet.override) return; // manual override
     const game = findGame(bet);
     if (!game) return;
     if (game.status === "final") {
@@ -442,13 +436,6 @@ function renderBetCard(bet) {
   if (status === "won") profitHTML = `<span class="result-profit positive">+$${bet.toWin.toFixed(2)}</span>`;
   else if (status === "lost") profitHTML = `<span class="result-profit negative">-$${bet.risk.toFixed(2)}</span>`;
 
-  const adminBtns = `
-    <div class="override-btns">
-      <button class="override-btn win" onclick="overrideBet(${bet.id},'won')" title="Mark Won">✓ WIN</button>
-      <button class="override-btn lose" onclick="overrideBet(${bet.id},'lost')" title="Mark Lost">✗ LOSE</button>
-      <button class="override-btn reset" onclick="overrideBet(${bet.id},'pending')" title="Reset">↺</button>
-    </div>`;
-
   return `
     <div class="bet-card ${status}" id="card-${bet.id}">
       <div class="card-header">
@@ -469,7 +456,6 @@ function renderBetCard(bet) {
         <div class="fin-item"><div class="fin-label">Payout</div><div class="fin-value payout">$${bet.payout.toFixed(2)}</div></div>
       </div>
       <div class="card-footer">
-        ${adminBtns}
         ${profitHTML}
       </div>
     </div>`;
@@ -583,7 +569,7 @@ function addNewBet() {
   const payout = parseFloat(document.getElementById("n_payout").value) || (risk + toWin);
   if (!pick || !opp) return alert("Please enter pick and opponent.");
   const newId = Math.max(...bets.map(b => b.id), 0) + 1;
-  bets.push({ id: newId, pick, opponent: opp, betType: type, odds, risk, toWin, payout, status: "pending", override: null });
+  bets.push({ id: newId, pick, opponent: opp, betType: type, odds, risk, toWin, payout, status: "pending" });
   saveBets(); render(); renderAdminContent();
 }
 
@@ -598,7 +584,6 @@ function saveBetEdit(id) {
   bet.toWin = parseFloat(document.getElementById("e_towin").value) || bet.toWin;
   bet.payout = parseFloat(document.getElementById("e_payout").value) || bet.payout;
   bet.status = document.getElementById("e_status").value;
-  bet.override = bet.status !== "pending" ? true : null;
   saveBets(); render();
   editingBetId = null; renderAdminContent();
 }
@@ -615,15 +600,6 @@ function resetAllBets() {
   if (!confirm("Reset all bets to defaults? This cannot be undone.")) return;
   bets = DEFAULT_BETS.map(b => ({...b}));
   saveBets(); render(); renderAdminContent();
-}
-
-// ─── Quick Overrides (card buttons) ──────────────────────────────────────────
-function overrideBet(id, status) {
-  const bet = bets.find(b => b.id === id);
-  if (!bet) return;
-  bet.status = status;
-  bet.override = status !== "pending" ? true : null;
-  saveBets(); render();
 }
 
 // ─── Close modal on overlay click ─────────────────────────────────────────────
