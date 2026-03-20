@@ -336,32 +336,29 @@ function processScores(games) {
 // Returns a match score (higher = better) for how well a query matches a team name.
 // Aliases for bet names that differ from ESPN display names
 const TEAM_ALIASES = {
+  // ESPN name: "Pennsylvania Quakers"
   "upenn": "pennsylvania",
   "penn": "pennsylvania",
+  // ESPN name: "California Baptist Lancers"
   "cal baptist": "california baptist",
+  // ESPN name: "Queens University Royals"
   "queens (n.c.)": "queens",
   "queens university": "queens",
-  "college of charleston": "charleston",
+  // ESPN name: "Long Island University Sharks"
   "long island": "long island university",
   "liu": "long island university",
-  "wright state": "wright state",
-  "tennessee state": "tennessee state",
-  "northern iowa": "northern iowa",
-  "st. john's": "saint john's",
+  // ESPN name: "Miami (OH) RedHawks"
   "miami (ohio)": "miami redhawks",
   "miami oh": "miami redhawks",
+  // ESPN name: "Miami Hurricanes"
   "miami (fl)": "miami hurricanes",
   "miami fl": "miami hurricanes",
+  // ESPN name: "St. John's Red Storm"
+  "st. john's": "saint john's",
+  // ESPN name: "Prairie View A&M Panthers"
   "prairie view a&m": "prairie view",
-  "long island university": "liu",
-  "liu sharks": "liu",
-  "santa clara": "santa clara",
-  "villanova": "villanova",
-  "hofstra": "hofstra",
-  "akron": "akron",
-  "ucf": "ucf",
-  "clemson": "clemson",
-  "missouri": "missouri",
+  // ESPN name: "College of Charleston" variants
+  "college of charleston": "charleston",
 };
 
 function normalize(s) {
@@ -402,7 +399,11 @@ function findGame(bet) {
       matchScore(bet.opponent, g.homeTeam),
       matchScore(bet.opponent, g.awayTeam)
     );
-    if (s > bestScore) { bestScore = s; bestGame = g; }
+    // Prefer final/live games over pre-games on equal score
+    const priority = g.status !== "pre" ? 1 : 0;
+    if (s > bestScore || (s === bestScore && s > 0 && priority > (bestGame?.status !== "pre" ? 1 : 0))) {
+      bestScore = s; bestGame = g;
+    }
   }
   return bestScore > 0 ? bestGame : null;
 }
