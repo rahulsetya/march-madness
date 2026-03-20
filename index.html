@@ -482,8 +482,7 @@ function renderStats() {
   document.getElementById("statsBar").innerHTML = `
     <div class="stat-card"><div class="stat-label">Record</div><div class="stat-value">${won}W - ${lost}L</div></div>
     <div class="stat-card"><div class="stat-label">Total Risked</div><div class="stat-value">$${totalRisked.toFixed(2)}</div></div>
-    <div class="stat-card"><div class="stat-label">Total Won</div><div class="stat-value green">$${totalWon.toFixed(2)}</div></div>
-    <div class="stat-card"><div class="stat-label">Net P&L</div><div class="stat-value ${netPL >= 0 ? 'green' : 'red'}">${netPL >= 0 ? '+' : ''}$${netPL.toFixed(2)}</div></div>
+<div class="stat-card"><div class="stat-label">Net P&L</div><div class="stat-value ${netPL >= 0 ? 'green' : 'red'}">${netPL >= 0 ? '+' : ''}$${netPL.toFixed(2)}</div></div>
     <div class="stat-card"><div class="stat-label">ROI</div><div class="stat-value ${roi === null ? '' : roi >= 0 ? 'green' : 'red'}">${roi === null ? '—' : (roi >= 0 ? '+' : '') + roi.toFixed(1) + '%'}</div></div>
     <div class="stat-card"><div class="stat-label">Live Now</div><div class="stat-value live">${live}</div></div>
     <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value yellow">${pending}</div></div>
