@@ -105,8 +105,8 @@
   .team-info { flex: 1; }
   .team-logo { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; }
   .team-logo-sm { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; }
-  .pick-team { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-  .vs-line { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+  .pick-team { font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .vs-line { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; display: flex; align-items: center; gap: 4px; }
   .bet-type-badge { font-size: 0.65rem; background: rgba(108,99,255,0.2); color: #a89cf7; border: 1px solid rgba(108,99,255,0.3); border-radius: 6px; padding: 2px 7px; white-space: nowrap; }
 
   .status-badge { padding: 4px 10px; border-radius: 8px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
@@ -498,8 +498,8 @@ function renderBetCard(bet) {
     <div class="bet-card ${status}" id="card-${bet.id}">
       <div class="card-header">
         <div class="team-info">
-          <div class="pick-team">${logoImg}<span>${escHtml(bet.pick)}</span></div>
-          <div class="vs-line">vs ${oppLogo ? `<img class="team-logo-sm" src="${escHtml(oppLogo)}" alt="" style="margin-right:3px;vertical-align:middle">` : ""}${escHtml(bet.opponent)}</div>
+          <div class="pick-team">${logoImg}<span>${escHtml(bet.pick.split(" ")[0])}</span></div>
+          <div class="vs-line">vs ${oppLogo ? `<img class="team-logo-sm" src="${escHtml(oppLogo)}" alt="">` : ""}${escHtml(bet.opponent.split(" ")[0])}</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
           <span class="bet-type-badge">${escHtml(bet.betType)}</span>
