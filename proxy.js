@@ -89,6 +89,7 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === "/scores") {
     try {
       const results = await Promise.allSettled([
+        fetchJSON(`${ESPN_BASE}&dates=${dateStr(-1)}`),
         fetchJSON(`${ESPN_BASE}&dates=${dateStr(0)}`),
         fetchJSON(`${ESPN_BASE}&dates=${dateStr(1)}`),
       ]);
