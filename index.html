@@ -104,6 +104,7 @@
   .card-header { padding: 12px 14px 8px; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
   .team-info { flex: 1; }
   .team-logo { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; }
+  .team-logo-sm { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; }
   .pick-team { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
   .vs-line { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
   .bet-type-badge { font-size: 0.65rem; background: rgba(108,99,255,0.2); color: #a89cf7; border: 1px solid rgba(108,99,255,0.3); border-radius: 6px; padding: 2px 7px; white-space: nowrap; }
@@ -458,6 +459,7 @@ function renderBetCard(bet) {
   // Resolve logos from live score data
   const pickIsHome = game && matchScore(bet.pick, game.homeTeam) >= matchScore(bet.pick, game.awayTeam);
   const pickLogo = game ? (pickIsHome ? game.homeLogo : game.awayLogo) : "";
+  const oppLogo  = game ? (pickIsHome ? game.awayLogo : game.homeLogo) : "";
 
   let scoreHTML = "";
   let clockHTML = "";
@@ -497,7 +499,7 @@ function renderBetCard(bet) {
       <div class="card-header">
         <div class="team-info">
           <div class="pick-team">${logoImg}<span>${escHtml(bet.pick)}</span></div>
-          <div class="vs-line">vs ${escHtml(bet.opponent)}</div>
+          <div class="vs-line">vs ${oppLogo ? `<img class="team-logo-sm" src="${escHtml(oppLogo)}" alt="" style="margin-right:3px;vertical-align:middle">` : ""}${escHtml(bet.opponent)}</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
           <span class="bet-type-badge">${escHtml(bet.betType)}</span>
