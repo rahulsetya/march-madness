@@ -290,7 +290,7 @@ function init() {
   saveBets();
   render();
   fetchScores();
-  setInterval(fetchScores, 30000);
+  scheduleRefresh();
 }
 
 function saveBets() { localStorage.setItem(STORAGE_KEY, JSON.stringify(bets)); }
@@ -336,6 +336,13 @@ async function fetchScores() {
     console.warn("Score fetch failed:", e.message);
     document.getElementById("updateBar").textContent = "Live scores unavailable — " + new Date().toLocaleTimeString();
   }
+}
+
+let refreshTimer = null;
+function scheduleRefresh() {
+  clearTimeout(refreshTimer);
+  const hasLive = bets.some(b => b.status === "live");
+  refreshTimer = setTimeout(async () => { await fetchScores(); scheduleRefresh(); }, hasLive ? 30000 : 180000);
 }
 
 function processScores(games) {
