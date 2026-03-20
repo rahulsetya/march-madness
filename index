@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>March Madness 2026 — Wagers</title>
 <style>
-/* ── PASTE YOUR RENDER URL HERE ───────────────────────── */
+/* https://march-madness-rjzg.onrender.com */
 /* Edit the PROXY_URL constant in the <script> below      */
 
 :root {
