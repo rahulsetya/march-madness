@@ -553,11 +553,12 @@ function renderBetCard(bet) {
       const pickML = pickIsHome ? game.odds.homeML : game.odds.awayML;
       const oppML  = pickIsHome ? game.odds.awayML  : game.odds.homeML;
       const fmtML  = v => !v ? "—" : (String(v).startsWith("-") || String(v).startsWith("+") ? v : "+" + v);
+      const mlColor = v => !v ? "var(--text-muted)" : (String(v).startsWith("-") ? "#ef4444" : "#22c55e");
       const parts = [];
-      if (pickML) parts.push(`<span style="color:var(--text-primary);font-weight:600">${escHtml(bet.pick)} ${fmtML(pickML)}</span>`);
-      if (oppML)  parts.push(`<span>${escHtml(bet.opponent)} ${fmtML(oppML)}</span>`);
-      if (game.odds.spread) parts.push(`<span>Spread: ${escHtml(game.odds.spread)}</span>`);
-      if (game.odds.overUnder) parts.push(`<span>O/U ${game.odds.overUnder}</span>`);
+      if (pickML) parts.push(`<span style="font-weight:700"><span style="color:var(--text-primary)">${escHtml(bet.pick)}</span> <span style="color:${mlColor(pickML)}">${fmtML(pickML)}</span></span>`);
+      if (oppML)  parts.push(`<span style="color:var(--text-muted)">${escHtml(bet.opponent)} <span style="color:${mlColor(oppML)}">${fmtML(oppML)}</span></span>`);
+      if (game.odds.spread) parts.push(`<span style="color:var(--text-muted)">Spread: <span style="color:var(--text-primary)">${escHtml(game.odds.spread)}</span></span>`);
+      if (game.odds.overUnder) parts.push(`<span style="color:var(--text-muted)">O/U <span style="color:var(--text-primary)">${game.odds.overUnder}</span></span>`);
       if (parts.length) {
         pregameOddsHTML = `<div style="font-size:0.7rem;color:var(--text-muted);display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:2px">
           ${parts.join('<span style="opacity:0.4">·</span>')}
@@ -592,9 +593,9 @@ function renderBetCard(bet) {
       winProbHTML = `
         <div style="padding:8px 14px 4px;font-size:0.7rem;color:var(--text-muted)">
           <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-            <span style="color:var(--text-primary);font-weight:600">${escHtml(bet.pick)} ${pickWinPct}%</span>
-            <span>Win Probability</span>
-            <span style="color:var(--text-primary);font-weight:600">${oppWinPct}% ${escHtml(bet.opponent)}</span>
+            <span style="font-weight:700"><span style="color:var(--text-primary)">${escHtml(bet.pick)}</span> <span style="color:${pickWinPct > 50 ? '#22c55e' : '#ef4444'}">${pickWinPct}%</span></span>
+            <span style="color:var(--text-muted)">Win Probability</span>
+            <span style="font-weight:700"><span style="color:${oppWinPct > 50 ? '#22c55e' : '#ef4444'}">${oppWinPct}%</span> <span style="color:var(--text-primary)">${escHtml(bet.opponent)}</span></span>
           </div>
           <div style="height:5px;border-radius:3px;background:var(--card-border);overflow:hidden">
             <div style="height:100%;width:${pickWinPct}%;background:${pickWinPct > 50 ? '#22c55e' : '#ef4444'};border-radius:3px;transition:width 0.5s"></div>
