@@ -103,7 +103,9 @@
 
   .card-header { padding: 12px 14px 8px; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
   .team-info { flex: 1; }
-  .pick-team { font-size: 1rem; font-weight: 700; }
+  .team-logo { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; }
+  .team-logo-sm { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; vertical-align: middle; margin-right: 4px; }
+  .pick-team { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
   .vs-line { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
   .bet-type-badge { font-size: 0.65rem; background: rgba(108,99,255,0.2); color: #a89cf7; border: 1px solid rgba(108,99,255,0.3); border-radius: 6px; padding: 2px 7px; white-space: nowrap; }
 
@@ -453,6 +455,12 @@ function renderBets() {
 function renderBetCard(bet) {
   const game = findGame(bet);
   const status = bet.status;
+
+  // Resolve logos from live score data
+  const pickIsHome = game && matchScore(bet.pick, game.homeTeam) >= matchScore(bet.pick, game.awayTeam);
+  const pickLogo = game ? (pickIsHome ? game.homeLogo : game.awayLogo) : "";
+  const oppLogo  = game ? (pickIsHome ? game.awayLogo : game.homeLogo) : "";
+
   let scoreHTML = "";
   let clockHTML = "";
   if (game && status === "pending" && game.startTime) {
@@ -462,16 +470,18 @@ function renderBetCard(bet) {
   if (game && (status === "live" || status === "won" || status === "lost")) {
     const home = game.homeTeam || ""; const away = game.awayTeam || "";
     const hs = game.homeScore ?? ""; const as = game.awayScore ?? "";
+    const awayLogo = game.awayLogo ? `<img class="team-logo-sm" src="${escHtml(game.awayLogo)}" alt="">` : "";
+    const homeLogo = game.homeLogo ? `<img class="team-logo-sm" src="${escHtml(game.homeLogo)}" alt="">` : "";
     scoreHTML = `
       <div class="score-section">
         <div class="score-box">
           <div>
-            <div class="score-team" title="${escHtml(away)}">${escHtml(away)}</div>
+            <div class="score-team" title="${escHtml(away)}">${awayLogo}${escHtml(away)}</div>
             <div class="score-val">${as}</div>
           </div>
           <div class="score-divider">-</div>
           <div>
-            <div class="score-team" title="${escHtml(home)}">${escHtml(home)}</div>
+            <div class="score-team" title="${escHtml(home)}">${homeLogo}${escHtml(home)}</div>
             <div class="score-val">${hs}</div>
           </div>
         </div>
@@ -484,12 +494,14 @@ function renderBetCard(bet) {
   if (status === "won") profitHTML = `<span class="result-profit positive">+$${bet.toWin.toFixed(2)}</span>`;
   else if (status === "lost") profitHTML = `<span class="result-profit negative">-$${bet.risk.toFixed(2)}</span>`;
 
+  const logoImg = pickLogo ? `<img class="team-logo" src="${escHtml(pickLogo)}" alt="">` : "";
+
   return `
     <div class="bet-card ${status}" id="card-${bet.id}">
       <div class="card-header">
         <div class="team-info">
-          <div class="pick-team">${escHtml(bet.pick)}</div>
-          <div class="vs-line">vs ${escHtml(bet.opponent)}</div>
+          <div class="pick-team">${logoImg}<span>${escHtml(bet.pick)}</span></div>
+          <div class="vs-line">vs ${oppLogo ? `<img class="team-logo-sm" src="${escHtml(oppLogo)}" alt="" style="margin-right:3px">` : ""}${escHtml(bet.opponent)}</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
           <span class="bet-type-badge">${escHtml(bet.betType)}</span>
