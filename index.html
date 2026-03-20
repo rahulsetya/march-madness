@@ -555,14 +555,22 @@ function renderBetCard(bet) {
     const home = game.homeTeam || ""; const away = game.awayTeam || "";
     const hs = game.homeScore ?? ""; const as = game.awayScore ?? "";
 
-    // Win probability bar (live only)
+    // TV + clock info shown to the right of the score
+    const clockStr = [game.period, game.clock].filter(Boolean).join(" • ");
+    const infoRightHTML = status === "live" ? `
+      <div style="display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:4px;padding-left:10px;border-left:1px solid var(--card-border);min-width:64px">
+        ${game.tv ? `<span style="font-size:0.72rem;color:var(--text-primary);font-weight:600">📺 ${escHtml(game.tv)}</span>` : ""}
+        ${clockStr ? `<span style="font-size:0.7rem;color:var(--text-muted)">${escHtml(clockStr)}</span>` : ""}
+      </div>` : "";
+
+    // Win probability bar between score box and financials
     let winProbHTML = "";
     if (status === "live" && game.winProb) {
       const pickWinPct = pickIsHome ? game.winProb.home : game.winProb.away;
       const oppWinPct  = pickIsHome ? game.winProb.away : game.winProb.home;
       winProbHTML = `
-        <div style="padding:6px 14px 2px;font-size:0.7rem;color:var(--text-muted)">
-          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+        <div style="padding:8px 14px 4px;font-size:0.7rem;color:var(--text-muted)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
             <span style="color:var(--text-primary);font-weight:600">${escHtml(bet.pick)} ${pickWinPct}%</span>
             <span>Win Probability</span>
             <span style="color:var(--text-primary);font-weight:600">${oppWinPct}% ${escHtml(bet.opponent)}</span>
@@ -573,30 +581,24 @@ function renderBetCard(bet) {
         </div>`;
     }
 
-    // TV channel during live games
-    let tvHTML = "";
-    if (status === "live" && game.tv) {
-      tvHTML = `
-        <div style="padding:2px 14px 6px;font-size:0.7rem;color:var(--text-muted);text-align:center">
-          📺 ${escHtml(game.tv)}
-        </div>`;
-    }
-
     scoreHTML = `
       <div class="score-section">
-        <div class="score-box">
-          <div>
-            <div class="score-team" title="${escHtml(away)}">${escHtml(away)}</div>
-            <div class="score-val">${as}</div>
+        <div class="score-box" style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div>
+              <div class="score-team" title="${escHtml(away)}">${escHtml(away)}</div>
+              <div class="score-val">${as}</div>
+            </div>
+            <div class="score-divider">-</div>
+            <div>
+              <div class="score-team" title="${escHtml(home)}">${escHtml(home)}</div>
+              <div class="score-val">${hs}</div>
+            </div>
           </div>
-          <div class="score-divider">-</div>
-          <div>
-            <div class="score-team" title="${escHtml(home)}">${escHtml(home)}</div>
-            <div class="score-val">${hs}</div>
-          </div>
+          ${infoRightHTML}
         </div>
-      </div>${winProbHTML}${tvHTML}`;
-    if (game.clock || game.period) {
+      </div>${winProbHTML}`;
+    if (status !== "live" && (game.clock || game.period)) {
       clockHTML = `<div class="game-clock">${game.period ? game.period + " • " : ""}${game.clock || ""}</div>`;
     }
   }
