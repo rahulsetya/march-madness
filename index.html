@@ -530,7 +530,13 @@ function renderBetCard(bet) {
   let clockHTML = "";
   if (game && status === "pending" && game.startTime) {
     const tipoff = new Date(game.startTime).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" });
-    scoreHTML = `<div class="game-clock" style="padding:8px 14px">Tip-off ${tipoff} EST</div>`;
+    const venueStr = game.venue ? `<span style="color:var(--text-muted)">📍 ${escHtml(game.venue)}</span>` : "";
+    const tvStr = game.tv ? `<span style="color:var(--text-muted)">📺 ${escHtml(game.tv)}</span>` : "";
+    const details = [venueStr, tvStr].filter(Boolean).join("&ensp;·&ensp;");
+    scoreHTML = `<div style="padding:8px 14px;display:flex;flex-direction:column;gap:4px;font-size:0.75rem">
+      <div class="game-clock" style="padding:0">Tip-off ${tipoff} EST</div>
+      ${details ? `<div style="font-size:0.72rem">${details}</div>` : ""}
+    </div>`;
   }
   if (game && game.status !== "pre" && (status === "live" || status === "won" || status === "lost")) {
     const home = game.homeTeam || ""; const away = game.awayTeam || "";

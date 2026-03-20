@@ -59,6 +59,8 @@ function cleanGames(raw) {
       clock: comp.status?.displayClock || "",
       period: comp.status?.period ? `Period ${comp.status.period}` : "",
       startTime: event.date,
+      venue: comp.venue?.fullName || "",
+      tv: (comp.broadcasts || []).flatMap(b => b.names || []).join(", "),
     };
   });
 }
