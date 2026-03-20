@@ -265,23 +265,34 @@ function processScores(games) {
 }
 
 // Returns a match score (higher = better) for how well a query matches a team name.
-// Uses word-boundary logic so "texas" won't score against "texas a&m aggies".
+// Aliases for bet names that differ from ESPN display names
+const TEAM_ALIASES = {
+  "upenn": "pennsylvania",
+  "penn": "pennsylvania",
+};
+
+function normalize(s) {
+  return String(s)
+    .toLowerCase()
+    .normalize("NFD")                        // decompose accented chars
+    .replace(/[\u0300-\u036f]/g, "")         // strip combining diacritics
+    .replace(/[\u02BB\u02BC\u2018\u2019'`]/g, "") // strip okina + smart/straight quotes
+    .trim();
+}
+
 function matchScore(query, teamName) {
-  const q = query.toLowerCase().trim();
-  const t = teamName.toLowerCase().trim();
-  if (q === t) return 100;                          // exact
-  if (t === q) return 100;
-  // Remove common suffixes like "aggies", "longhorns", etc. for comparison
+  let q = normalize(query);
+  const t = normalize(teamName);
+  // Apply alias (e.g. upenn → pennsylvania)
+  q = TEAM_ALIASES[q] || q;
+  if (q === t) return 100;
   const tWords = t.split(/\s+/);
   const qWords = q.split(/\s+/);
-  // All query words must appear as whole words in team name (not as substrings)
-  const allMatch = qWords.every(qw =>
-    tWords.some(tw => tw === qw)
-  );
-  if (allMatch && qWords.length === tWords.length) return 90; // same word count, all match
-  if (allMatch) return 70;                           // query words all found in team
-  // team name starts with query (e.g. query="texas" team="texas longhorns" — ok)
-  // but NOT if query is shorter and team has more specific prefix words
+  const allMatch = qWords.every(qw => tWords.some(tw => tw === qw));
+  if (allMatch && qWords.length === tWords.length) return 90;
+  // Score by coverage ratio — "texas" covers 1/2 of "texas longhorns" (score 75)
+  // but only 1/3 of "texas a&m aggies" (score ~73), so longhorns wins
+  if (allMatch) return 70 + (qWords.length / tWords.length) * 10;
   if (tWords.slice(0, qWords.length).join(" ") === q) return 60;
   return 0;
 }
@@ -350,17 +361,16 @@ function renderStats() {
     <div class="stat-card"><div class="stat-label">Total Won</div><div class="stat-value green">$${totalWon.toFixed(2)}</div></div>
     <div class="stat-card"><div class="stat-label">Net P&L</div><div class="stat-value ${netPL >= 0 ? 'green' : 'red'}">${netPL >= 0 ? '+' : ''}$${netPL.toFixed(2)}</div></div>
     <div class="stat-card"><div class="stat-label">Live Now</div><div class="stat-value live">${live}</div></div>
-    <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value yellow">${pending}</div></div>
   `;
 }
 
 function renderTabs() {
-  const counts = { ALL: bets.length, LIVE: 0, PENDING: 0, WON: 0, LOST: 0 };
+  const counts = { ALL: bets.length, LIVE: 0, WON: 0, LOST: 0 };
   bets.forEach(b => {
     const s = b.status.toUpperCase();
     if (counts[s] !== undefined) counts[s]++;
   });
-  const tabs = ["ALL","LIVE","PENDING","WON","LOST"];
+  const tabs = ["ALL","LIVE","WON","LOST"];
   document.getElementById("filterBar").innerHTML = tabs.map(t =>
     `<button class="tab ${activeFilter===t?'active':''}" onclick="setFilter('${t}')">${t}<span class="badge">${counts[t]}</span></button>`
   ).join("");
