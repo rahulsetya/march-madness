@@ -573,20 +573,12 @@ function renderBetCard(bet) {
         </div>`;
     }
 
-    // Live odds
-    let oddsHTML = "";
-    if (status === "live" && game.odds) {
-      const pickML = pickIsHome ? game.odds.homeML : game.odds.awayML;
-      const oppML  = pickIsHome ? game.odds.awayML : game.odds.homeML;
-      const fmtML  = v => v == null ? "—" : (v > 0 ? "+" : "") + v;
-      oddsHTML = `
-        <div style="padding:4px 14px 6px;font-size:0.7rem;color:var(--text-muted);display:flex;align-items:center;gap:6px">
-          <span>📊 Live ML:</span>
-          <span style="color:var(--text-primary);font-weight:600">${escHtml(bet.pick)} ${fmtML(pickML)}</span>
-          <span>·</span>
-          <span>${escHtml(bet.opponent)} ${fmtML(oppML)}</span>
-          ${game.odds.overUnder ? `<span>·</span><span>O/U ${game.odds.overUnder}</span>` : ""}
-          <span style="margin-left:auto;opacity:0.5">via ${escHtml(game.odds.provider)}</span>
+    // TV channel during live games
+    let tvHTML = "";
+    if (status === "live" && game.tv) {
+      tvHTML = `
+        <div style="padding:2px 14px 6px;font-size:0.7rem;color:var(--text-muted);text-align:center">
+          📺 ${escHtml(game.tv)}
         </div>`;
     }
 
@@ -603,7 +595,7 @@ function renderBetCard(bet) {
             <div class="score-val">${hs}</div>
           </div>
         </div>
-      </div>${winProbHTML}${oddsHTML}`;
+      </div>${winProbHTML}${tvHTML}`;
     if (game.clock || game.period) {
       clockHTML = `<div class="game-clock">${game.period ? game.period + " • " : ""}${game.clock || ""}</div>`;
     }

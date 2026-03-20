@@ -79,11 +79,11 @@ function cleanGames(raw) {
       })(),
       // Win probability from live situation
       winProb: (() => {
-        const sit = comp.situation;
-        if (!sit) return null;
-        const homeWinPct = sit.homeWinPercentage ?? sit.probability?.home ?? null;
-        if (homeWinPct === null) return null;
-        return { home: Math.round(homeWinPct * 100), away: Math.round((1 - homeWinPct) * 100) };
+        const prob = comp.situation?.probability;
+        if (!prob) return null;
+        const h = prob.homeWinPercentage;
+        if (h == null) return null;
+        return { home: Math.round(h * 100), away: Math.round((prob.awayWinPercentage ?? (1 - h)) * 100) };
       })(),
     };
   });
