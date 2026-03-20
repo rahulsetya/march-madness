@@ -485,7 +485,7 @@ function renderBetCard(bet) {
     const tipoff = new Date(game.startTime).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" });
     scoreHTML = `<div class="game-clock" style="padding:8px 14px">Tip-off ${tipoff} EST</div>`;
   }
-  if (game && (status === "live" || status === "won" || status === "lost")) {
+  if (game && game.status !== "pre" && (status === "live" || status === "won" || status === "lost")) {
     const home = game.homeTeam || ""; const away = game.awayTeam || "";
     const hs = game.homeScore ?? ""; const as = game.awayScore ?? "";
     scoreHTML = `
