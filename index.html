@@ -344,13 +344,10 @@ let refreshTimer = null;
 function scheduleRefresh() {
   clearTimeout(refreshTimer);
   const hour = new Date().getHours();
-  if (hour >= 2 && hour < 11) {
-    // Sleep until 11am
-    const resume = new Date(); resume.setHours(11, 0, 0, 0);
-    refreshTimer = setTimeout(async () => { await fetchScores(); scheduleRefresh(); }, resume - Date.now());
-    return;
-  }
+  if (hour >= 2 && hour < 11) return;
   const hasLive = bets.some(b => b.status === "live");
+  const hasPending = bets.some(b => b.status === "pending");
+  if (!hasLive && !hasPending) return;
   refreshTimer = setTimeout(async () => { await fetchScores(); scheduleRefresh(); }, hasLive ? 30000 : 180000);
 }
 
