@@ -342,13 +342,7 @@ async function fetchScores() {
 
 let refreshTimer = null;
 function scheduleRefresh() {
-  clearTimeout(refreshTimer);
-  const hour = new Date().getHours();
-  if (hour >= 2 && hour < 11) return;
-  const hasLive = bets.some(b => b.status === "live");
-  const hasPending = bets.some(b => b.status === "pending");
-  if (!hasLive && !hasPending) return;
-  refreshTimer = setTimeout(async () => { await fetchScores(); scheduleRefresh(); }, hasLive ? 30000 : 180000);
+  // Auto-refresh disabled — use manual refresh button
 }
 
 function processScores(games) {
